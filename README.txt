@@ -1,5 +1,4 @@
-# 440-Group-N-Spring-2024
-Repository for CS 440 Group N for Spring 2024
+Repository for CS 440 Group 1 for Spring 2024
 
 Note:  The presentation evaluation form and rubric are provided here for reference
        and planning purposes.  Hard copies will be handed out in class on 
