@@ -9,11 +9,11 @@ android {
 
     defaultConfig {
         applicationId = "com.example.money_man_group1"
-        minSdk = 24
+        minSdk = 19
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
-
+        multiDexEnabled = true
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -45,4 +45,6 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+    implementation("com.github.AnyChart:AnyChart-Android:1.1.5")
+    implementation("com.android.support:multidex:1.0.3")
 }

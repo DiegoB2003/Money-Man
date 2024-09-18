@@ -1,6 +1,8 @@
 package com.example.money_man_group1
 
+import android.content.Intent
 import android.os.Bundle
+import android.widget.Button
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -16,5 +18,12 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+
+        val loginButton = findViewById<Button>(R.id.loginScreenButton)
+        loginButton.setOnClickListener {
+            val intent = Intent(this, BudgetPage::class.java)
+            startActivity(intent)
+        }
+
     }
 }
