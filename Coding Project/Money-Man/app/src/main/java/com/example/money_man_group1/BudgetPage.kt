@@ -13,6 +13,8 @@ import com.anychart.charts.Pie
 
 class BudgetPage : AppCompatActivity() {
     private val pieChartData: ArrayList<DataEntry> = ArrayList() //ArrayList to hold data for pie chart
+    private lateinit var pieChart: Pie //Declare pie chart var
+    private lateinit var anyChartView: AnyChartView //Declare chart view var
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,9 +26,8 @@ class BudgetPage : AppCompatActivity() {
             insets
         }
 
-        val anyChartView = findViewById<AnyChartView>(R.id.any_chart_view) //gets pie chart object from xml page using its id
-        val pieChart = AnyChart.pie() //creates pie chart from library
-        pieChart.data(pieChartData) //sets the array of data to the pie chart to display
+        anyChartView = findViewById<AnyChartView>(R.id.any_chart_view) //gets pie chart object from xml page using its id
+        pieChart = AnyChart.pie() //creates pie chart from library
         anyChartView.setChart(pieChart)
 
         //Calls addToChart function using name and cost of what the user spent
@@ -37,14 +38,10 @@ class BudgetPage : AppCompatActivity() {
     }
 
     //function adds name and cost of what user spend into the
-    //pieChartData arraylist gets the pie chart object,
-    // creates a pie chart, and updates pie chart view with new values
+    //pieChartData arraylist and then sets the new data to
+    //the pie chart so it is displayed
     private fun addToChart (name: String, cost: Int) {
         pieChartData.add(ValueDataEntry(name, cost)) //adds values to arraylist
-
-        val anyChartView = findViewById<AnyChartView>(R.id.any_chart_view) //gets piechart object from xml page using its id
-        val pieChart = AnyChart.pie() //creates pie chart from library
         pieChart.data(pieChartData)//sets the array of data to the pie chart to display
-        anyChartView.setChart(pieChart) //updates pie chart view
     }
 }
