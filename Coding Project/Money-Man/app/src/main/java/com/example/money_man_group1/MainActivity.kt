@@ -25,5 +25,11 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
+        val createAccountButton = findViewById<Button>(R.id.createAccountScreenButton)
+        createAccountButton.setOnClickListener {
+            val intent = Intent(this, createAccount::class.java)
+            startActivity(intent)
+        }
+
     }
 }
