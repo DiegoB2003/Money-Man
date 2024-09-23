@@ -23,6 +23,7 @@ class ServiceLinkPage : AppCompatActivity() {
         finishButton.setOnClickListener {
             val intent = Intent(this, BudgetPage::class.java)
             startActivity(intent)
+
         }
     }
 }
