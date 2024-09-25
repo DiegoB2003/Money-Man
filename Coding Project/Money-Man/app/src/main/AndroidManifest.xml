@@ -16,9 +16,6 @@
             android:name=".ServiceLinkPage"
             android:exported="false" />
         <activity
-            android:name=".ServiveLinkPage"
-            android:exported="false" />
-        <activity
             android:name=".createAccount"
             android:exported="false" />
         <activity
