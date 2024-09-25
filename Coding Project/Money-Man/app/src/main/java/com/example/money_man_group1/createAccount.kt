@@ -24,11 +24,12 @@ class createAccount : AppCompatActivity() {
         prevButton.setOnClickListener {
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
+
         }
 
         //make an action button to go back into the home screen
         val nextButton = findViewById<Button>(R.id.nextbutton)
-        prevButton.setOnClickListener {
+        nextButton.setOnClickListener {
             val intent = Intent(this, ServiceLinkPage::class.java)
             startActivity(intent)
         }

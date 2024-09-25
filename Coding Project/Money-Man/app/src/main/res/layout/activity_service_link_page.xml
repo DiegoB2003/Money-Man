@@ -7,16 +7,80 @@
     android:layout_height="match_parent"
     tools:context=".ServiceLinkPage">
 
+    <TextView
+        android:id="@+id/Title"
+        android:layout_width="200dp"
+        android:layout_height="100dp"
+        android:layout_marginTop="16dp"
+        android:gravity="center"
+        android:text="Link Accounts"
+        android:textSize="30sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
+    <!-- Change to your actual ID -->
+
+    <TextView
+        android:id="@+id/instructions"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="176dp"
+        android:gravity="center"
+        android:text="Press the Add Account button to link an account and Done when finished"
+        android:textSize="25sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.496"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/Title" />
+
+    <LinearLayout
+        android:id="@+id/box_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintTop_toBottomOf="@+id/Title"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+
+    <!-- First Button: Back -->
+    <Button
+        android:id="@+id/backbutton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Back"
+        android:textColor="@android:color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/add_slot_button"
+        android:layout_margin="16dp" />
+
+    <!-- Second Button: Add Account -->
+    <Button
+        android:id="@+id/add_slot_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Add Account"
+        android:textColor="@android:color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@id/backbutton"
+        app:layout_constraintEnd_toStartOf="@id/donebutton"
+        android:layout_margin="16dp" />
+
+    <!-- Third Button: Done -->
     <Button
         android:id="@+id/donebutton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Done"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:textColor="@android:color/white"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        />
+        app:layout_constraintStart_toEndOf="@id/add_slot_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_margin="16dp" />
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
