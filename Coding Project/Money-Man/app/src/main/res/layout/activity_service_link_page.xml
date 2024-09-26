@@ -20,8 +20,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- Change to your actual ID -->
-
     <TextView
         android:id="@+id/instructions"
         android:layout_width="250dp"
@@ -42,8 +40,15 @@
         android:orientation="vertical"
         app:layout_constraintTop_toBottomOf="@+id/Title"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent">
 
+        <!-- Spinner for account selection -->
+        <Spinner
+            android:id="@+id/account_spinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"/> <!-- Set to gone initially -->
+    </LinearLayout>
 
     <!-- First Button: Back -->
     <Button
@@ -80,7 +85,4 @@
         app:layout_constraintStart_toEndOf="@id/add_slot_button"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_margin="16dp" />
-
-
-
 </androidx.constraintlayout.widget.ConstraintLayout>
