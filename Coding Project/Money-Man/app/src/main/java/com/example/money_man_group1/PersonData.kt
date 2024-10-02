@@ -18,7 +18,6 @@ data class Person(
     val housing: Double,
     val other: Double
 )
-
 //Functions for getting user data out of files
 class PersonData {
 

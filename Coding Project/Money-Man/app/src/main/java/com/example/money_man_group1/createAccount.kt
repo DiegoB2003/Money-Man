@@ -48,7 +48,7 @@ class createAccount : AppCompatActivity() {
             val person = Person(firstName, lastName, email, password, phoneNumber, yearlyIncome, dateOfBirth,
                 food = 0.0, education = 0.0, hobbies = 0.0, health = 0.0, housing = 0.0, other = 0.0 )
 
-            writeToFile(person) //writes object to file
+            writeToFile(person)//writes object to file
 
             //Go to service linking page
             val intent = Intent(this, ServiceLinkPage::class.java)
