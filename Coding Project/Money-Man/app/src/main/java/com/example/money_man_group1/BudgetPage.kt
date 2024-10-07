@@ -1,5 +1,6 @@
 package com.example.money_man_group1
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -10,8 +11,18 @@ import com.anychart.AnyChartView
 import com.anychart.chart.common.dataentry.DataEntry
 import com.anychart.chart.common.dataentry.ValueDataEntry
 import com.anychart.charts.Pie
+import androidx.drawerlayout.widget.DrawerLayout
+import com.google.android.material.navigation.NavigationView
+import androidx.appcompat.app.ActionBarDrawerToggle
+import android.view.MenuItem
+import android.widget.Toast
 
 class BudgetPage : AppCompatActivity() {
+    // Navigation vars
+    private lateinit var drawerLayout: DrawerLayout
+    private lateinit var navView: NavigationView
+
+    // Pie chart vars
     private val pieChartData: ArrayList<DataEntry> = ArrayList() //ArrayList to hold data for pie chart
     private lateinit var pieChart: Pie //Declare pie chart var
     private lateinit var anyChartView: AnyChartView //Declare chart view var
@@ -26,7 +37,7 @@ class BudgetPage : AppCompatActivity() {
             insets
         }
 
-        anyChartView = findViewById<AnyChartView>(R.id.any_chart_view) //gets pie chart object from xml page using its id
+        anyChartView = findViewById(R.id.any_chart_view) //gets pie chart object from xml page using its id
         pieChart = AnyChart.pie() //creates pie chart from library
         anyChartView.setChart(pieChart)
 
@@ -35,6 +46,52 @@ class BudgetPage : AppCompatActivity() {
         addToChart("Food", 250)
         addToChart("Child", 439)
         addToChart("Hobbies", 75)
+
+        // Nav view configurations
+        // Initialize DrawerLayout and NavigationView
+        drawerLayout = findViewById(R.id.drawer_layout)
+        navView = findViewById(R.id.nav_view)
+
+        // Add toggle to open and close drawer
+        val toggle = ActionBarDrawerToggle(
+            this, drawerLayout, R.string.navigation_drawer_open, R.string.navigation_drawer_close
+        )
+        drawerLayout.addDrawerListener(toggle)
+        toggle.syncState()
+
+        // Handle navigation menu item clicks
+        navView.setNavigationItemSelectedListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.budgeting_page_button -> {
+                    // Handle the budgeting page click
+                    Toast.makeText(this, "Already on Budgeting Page", Toast.LENGTH_SHORT).show()
+                }
+                R.id.user_info_button -> {
+                    // Handle the user info page click
+                    Toast.makeText(this, "User Info Clicked", Toast.LENGTH_SHORT).show()
+                    val intent = Intent(this, UserInfoPage::class.java)
+                    startActivity(intent)
+                }
+                R.id.service_link_button -> {
+                    // Handle linked accounts page click
+                    Toast.makeText(this, "Linked Accounts Clicked", Toast.LENGTH_SHORT).show()
+                    val intent = Intent(this, ServiceLinkPage::class.java)
+                    startActivity(intent)
+                }
+                R.id.logout_button -> {
+                    // Handle logout
+                    Toast.makeText(this, "Log Out Clicked", Toast.LENGTH_SHORT).show()
+                    val intent = Intent(this, MainActivity::class.java)
+                    startActivity(intent)
+                }
+            }
+            drawerLayout.closeDrawers()
+            true
+        }
+
+        // Enable toggle button in the action bar
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        toggle.syncState()
     }
 
     //function adds name and cost of what user spend into the
@@ -43,5 +100,13 @@ class BudgetPage : AppCompatActivity() {
     private fun addToChart (name: String, cost: Int) {
         pieChartData.add(ValueDataEntry(name, cost)) //adds values to arraylist
         pieChart.data(pieChartData)//sets the array of data to the pie chart to display
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        // Handle action bar item clicks to open/close the drawer
+        return if (item.itemId == android.R.id.home) {
+            drawerLayout.openDrawer(navView)
+            true
+        } else super.onOptionsItemSelected(item)
     }
 }

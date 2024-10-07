@@ -2,6 +2,7 @@ package com.example.money_man_group1
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.MenuItem
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -13,8 +14,15 @@ import android.view.View
 import android.widget.Spinner
 import android.widget.ArrayAdapter
 import android.widget.Toast
+import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.drawerlayout.widget.DrawerLayout
+import com.google.android.material.navigation.NavigationView
 
 class ServiceLinkPage : AppCompatActivity() {
+    // Navigation vars
+    private lateinit var drawerLayout: DrawerLayout
+    private lateinit var navView: NavigationView
+
     private var spinnerCount = 0 // Counter for spinners
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -82,5 +90,60 @@ class ServiceLinkPage : AppCompatActivity() {
                 Toast.makeText(this, "Please add at least one account before proceeding.", Toast.LENGTH_SHORT).show()
             }
         }
+
+        // Nav view configurations
+        // Initialize DrawerLayout and NavigationView
+        drawerLayout = findViewById(R.id.drawer_layout)
+        navView = findViewById(R.id.nav_view)
+
+        // Add toggle to open and close drawer
+        val toggle = ActionBarDrawerToggle(
+            this, drawerLayout, R.string.navigation_drawer_open, R.string.navigation_drawer_close
+        )
+        drawerLayout.addDrawerListener(toggle)
+        toggle.syncState()
+
+        // Handle navigation menu item clicks
+        navView.setNavigationItemSelectedListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.budgeting_page_button -> {
+                    // Handle the budgeting page click
+                    Toast.makeText(this, "Budgeting Page Clicked", Toast.LENGTH_SHORT).show()
+                    val intent = Intent(this, BudgetPage::class.java)
+                    startActivity(intent)
+                }
+                R.id.user_info_button -> {
+                    // Handle the user info page click
+                    Toast.makeText(this, "User Info Clicked", Toast.LENGTH_SHORT).show()
+                    val intent = Intent(this, UserInfoPage::class.java)
+                    startActivity(intent)
+                }
+                R.id.service_link_button -> {
+                    // Handle linked accounts page click
+                    Toast.makeText(this, "Already on Linked Accounts", Toast.LENGTH_SHORT).show()
+                }
+                R.id.logout_button -> {
+                    // Handle logout
+                    Toast.makeText(this, "Log Out Clicked", Toast.LENGTH_SHORT).show()
+                    val intent = Intent(this, MainActivity::class.java)
+                    startActivity(intent)
+                }
+            }
+            drawerLayout.closeDrawers()
+            true
+        }
+
+        // Enable toggle button in the action bar
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        toggle.syncState()
     }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        // Handle action bar item clicks to open/close the drawer
+        return if (item.itemId == android.R.id.home) {
+            drawerLayout.openDrawer(navView)
+            true
+        } else super.onOptionsItemSelected(item)
+    }
+
 }
