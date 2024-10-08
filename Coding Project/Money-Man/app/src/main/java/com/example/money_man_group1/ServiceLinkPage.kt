@@ -46,31 +46,62 @@ class ServiceLinkPage : AppCompatActivity() {
         // Set onClickListener for the Add Slot button
         addSlotButton.setOnClickListener {
             if (spinnerCount < 4) { // Check if the limit is less than 4
-                // Create a new Spinner
-                val newSpinner = Spinner(this).apply {
-                    instructionsTextView.visibility = View.GONE // or View.INVISIBLE
+                // Create a new container (LinearLayout) for the Spinner and Delete Button
+                val accountContainer = LinearLayout(this).apply {
+                    orientation = LinearLayout.HORIZONTAL
                     layoutParams = LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.MATCH_PARENT,
                         LinearLayout.LayoutParams.WRAP_CONTENT
                     ).apply {
-                        // Set margin for the spinner
                         setMargins(0, 16, 0, 0) // Top margin of 16dp
                     }
+                }
+
+                // Create a new Spinner
+                val newSpinner = Spinner(this).apply {
+                    instructionsTextView.visibility = View.GONE // or View.INVISIBLE
+                    layoutParams = LinearLayout.LayoutParams(
+                        0,
+                        LinearLayout.LayoutParams.WRAP_CONTENT,
+                        1.0f // Weight for equal spacing between Spinner and Button
+                    )
 
                     // Create an ArrayAdapter for the Spinner
-                    val options = arrayOf("Select An Account" ,"Bank Account", "Cashapp", "Paypal", "Venmo") // Example options
+                    val options = arrayOf("Select An Account", "Bank Account", "Cashapp", "Paypal", "Venmo")
                     val adapter = ArrayAdapter(this@ServiceLinkPage, android.R.layout.simple_spinner_item, options)
                     adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                     this.adapter = adapter
                 }
 
+                // Create a new Delete Button
+                val deleteButton = Button(this).apply {
+                    text = "Delete"
+                    layoutParams = LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.WRAP_CONTENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                    ).apply {
+                        setMargins(16, 0, 0, 0) // Left margin for spacing between Spinner and Delete Button
+                    }
+
+                    // Set OnClickListener to remove this account (Spinner and Delete Button)
+                    setOnClickListener {
+                        // Remove the container (which includes the spinner and this delete button)
+                        val boxContainer = findViewById<LinearLayout>(R.id.box_container)
+                        boxContainer.removeView(accountContainer)
+                        spinnerCount-- // Decrease spinner count
+                    }
+                }
+
+                // Add Spinner and Delete Button to the account container
+                accountContainer.addView(newSpinner)
+                accountContainer.addView(deleteButton)
+
+                // Add the account container to the main container (boxContainer)
+                val boxContainer = findViewById<LinearLayout>(R.id.box_container)
+                boxContainer.addView(accountContainer)
+
                 // Change the button text to say "Add Another Account"
                 addSlotButton.text = "Add Another Account"
-
-                // Add the new Spinner to the container
-                val boxContainer = findViewById<LinearLayout>(R.id.box_container)
-                boxContainer.addView(newSpinner)
-
                 spinnerCount++ // Increment spinner count
             } else {
                 Toast.makeText(this, "You can only add up to 4 accounts.", Toast.LENGTH_SHORT).show()

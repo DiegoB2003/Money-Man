@@ -40,19 +40,28 @@ class createAccount : AppCompatActivity() {
             val email = findViewById<EditText>(R.id.editTextTextEmailAddress).text.toString()
             val password = findViewById<EditText>(R.id.password_toggle).text.toString()
             val phoneNumber = findViewById<EditText>(R.id.phoneNumber).text.toString()
-            val yearlyIncome = findViewById<EditText>(R.id.yearlyIncomeText).text.toString().toDouble()
+            val yearlyIncome = findViewById<EditText>(R.id.yearlyIncomeText).text.toString()
             val dateOfBirth = findViewById<EditText>(R.id.bdayBox).text.toString()
 
-            //Create a Person object with above values and
-            //set pie chart values to 0.0 because they didn't spend anything yet
-            val person = Person(firstName, lastName, email, password, phoneNumber, yearlyIncome, dateOfBirth,
-                food = 0.0, education = 0.0, hobbies = 0.0, health = 0.0, housing = 0.0, other = 0.0 )
 
-            writeToFile(person)//writes object to file
+            // Check if any of the fields are empty or yearlyIncome is invalid
+            if (firstName.isEmpty() || lastName.isEmpty() || email.isEmpty() || password.isEmpty() ||
+                phoneNumber.isEmpty() || yearlyIncome.isEmpty() || dateOfBirth.isEmpty()) {
+                Toast.makeText(this, "Please fill out all fields", Toast.LENGTH_SHORT).show()
+            } else {
+                // convert yearly income to double
+                val yearlyIncome = yearlyIncome.toDouble()
 
-            //Go to service linking page
-            val intent = Intent(this, ServiceLinkPage::class.java)
-            startActivity(intent)
+                val person = Person(firstName, lastName, email, password, phoneNumber, yearlyIncome, dateOfBirth,
+                    food = 0.0, education = 0.0, hobbies = 0.0, health = 0.0, housing = 0.0, other = 0.0)
+
+                writeToFile(person) // Writes object to file
+
+                // Go to service linking page
+                val intent = Intent(this, ServiceLinkPage::class.java)
+                startActivity(intent)
+            }
+
         }
     }
 
