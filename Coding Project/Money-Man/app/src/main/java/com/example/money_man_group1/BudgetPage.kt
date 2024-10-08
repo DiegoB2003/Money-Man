@@ -2,20 +2,20 @@ package com.example.money_man_group1
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.MenuItem
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import com.anychart.AnyChart
 import com.anychart.AnyChartView
 import com.anychart.chart.common.dataentry.DataEntry
 import com.anychart.chart.common.dataentry.ValueDataEntry
 import com.anychart.charts.Pie
-import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.material.navigation.NavigationView
-import androidx.appcompat.app.ActionBarDrawerToggle
-import android.view.MenuItem
-import android.widget.Toast
 
 class BudgetPage : AppCompatActivity() {
     // Navigation vars
@@ -37,15 +37,23 @@ class BudgetPage : AppCompatActivity() {
             insets
         }
 
+        val currentUser = MainActivity.currentLogin //gets currently logged in person
+
         anyChartView = findViewById(R.id.any_chart_view) //gets pie chart object from xml page using its id
         pieChart = AnyChart.pie() //creates pie chart from library
         anyChartView.setChart(pieChart)
 
         //Calls addToChart function using name and cost of what the user spent
-        addToChart("Education", 1000)
-        addToChart("Food", 250)
-        addToChart("Child", 439)
-        addToChart("Hobbies", 75)
+        if (currentUser != null) { //if the currentUser isn't null, gets and inserts all amounts spent
+            addToChart("Food", currentUser.food)
+            addToChart("Education", currentUser.education)
+            addToChart("Hobbies", currentUser.hobbies)
+            addToChart("Health", currentUser.health)
+            addToChart("Housing", currentUser.housing)
+            addToChart("Other", currentUser.other)
+        }
+
+
 
         // Nav view configurations
         // Initialize DrawerLayout and NavigationView
@@ -97,7 +105,7 @@ class BudgetPage : AppCompatActivity() {
     //function adds name and cost of what user spend into the
     //pieChartData arraylist and then sets the new data to
     //the pie chart so it is displayed
-    private fun addToChart (name: String, cost: Int) {
+    private fun addToChart (name: String, cost: Double) {
         pieChartData.add(ValueDataEntry(name, cost)) //adds values to arraylist
         pieChart.data(pieChartData)//sets the array of data to the pie chart to display
     }
