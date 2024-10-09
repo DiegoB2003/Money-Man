@@ -1,3 +1,4 @@
+
 package com.example.money_man_group1
 
 import android.content.Intent
@@ -43,68 +44,80 @@ class ServiceLinkPage : AppCompatActivity() {
         val doneButton = findViewById<Button>(R.id.donebutton)
         val instructionsTextView = findViewById<TextView>(R.id.instructions)
 
-        // Set onClickListener for the Add Slot button
+        // Set onClickListener for the Add Slot
         addSlotButton.setOnClickListener {
-            if (spinnerCount < 4) { // Check if the limit is less than 4
-                // Create a new container (LinearLayout) for the Spinner and Delete Button
-                val accountContainer = LinearLayout(this).apply {
+            // Check if the spinner count is greater than or equal to 4, and display a toast message if so
+            if (spinnerCount >= 4) { // Check if the spinner count is greater than or equal to 4
+                Toast.makeText(this, "You can only add up to 4 accounts.", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            else {
+                // Create a horizontal layout to hold the spinner and delete button
+                val horizontalLayout = LinearLayout(this).apply {
                     orientation = LinearLayout.HORIZONTAL
                     layoutParams = LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.MATCH_PARENT,
                         LinearLayout.LayoutParams.WRAP_CONTENT
                     ).apply {
-                        setMargins(0, 16, 0, 0) // Top margin of 16dp
+                        setMargins(0, 32, 0, 0) // Increase top margin for more space between spinners (32dp)
                     }
                 }
 
-                // Create a new Spinner
+                // Create the new Spinner
                 val newSpinner = Spinner(this).apply {
-                    instructionsTextView.visibility = View.GONE // or View.INVISIBLE
+                    instructionsTextView.visibility =
+                        View.GONE // Hide instructions if spinner is added
                     layoutParams = LinearLayout.LayoutParams(
-                        0,
+                        0, // Set weight of the spinner to take up available space
                         LinearLayout.LayoutParams.WRAP_CONTENT,
-                        1.0f // Weight for equal spacing between Spinner and Button
+                        1f
+
                     )
 
-                    // Create an ArrayAdapter for the Spinner
-                    val options = arrayOf("Select An Account", "Bank Account", "Cashapp", "Paypal", "Venmo")
-                    val adapter = ArrayAdapter(this@ServiceLinkPage, android.R.layout.simple_spinner_item, options)
+                    spinnerCount++ // Increment spinner count
+
+                    // Create an array adapter for the spinner and set the dropdown items
+                    val options =
+                        arrayOf("Select An Account", "Bank Account", "CashApp", "Paypal", "Venmo")
+                    val adapter = ArrayAdapter(
+                        this@ServiceLinkPage,
+                        android.R.layout.simple_spinner_item,
+                        options
+                    )
                     adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                     this.adapter = adapter
                 }
 
-                // Create a new Delete Button
+                // Create the delete button
                 val deleteButton = Button(this).apply {
                     text = "Delete"
                     layoutParams = LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.WRAP_CONTENT,
                         LinearLayout.LayoutParams.WRAP_CONTENT
-                    ).apply {
-                        setMargins(16, 0, 0, 0) // Left margin for spacing between Spinner and Delete Button
+                    )
+                    setOnClickListener {
+                        // Remove the horizontal layout containing the spinner and delete button
+                        (horizontalLayout.parent as? LinearLayout)?.removeView(horizontalLayout)
+                        --spinnerCount // Decrement spinner count
+
+                        if (spinnerCount == 0) { // Check if spinner count is 0
+                            // Show instructions if spinner is deleted
+                            instructionsTextView.visibility = View.VISIBLE
+                        }
                     }
 
-                    // Set OnClickListener to remove this account (Spinner and Delete Button)
-                    setOnClickListener {
-                        // Remove the container (which includes the spinner and this delete button)
-                        val boxContainer = findViewById<LinearLayout>(R.id.box_container)
-                        boxContainer.removeView(accountContainer)
-                        spinnerCount-- // Decrease spinner count
-                    }
+
                 }
 
-                // Add Spinner and Delete Button to the account container
-                accountContainer.addView(newSpinner)
-                accountContainer.addView(deleteButton)
+                // Add the spinner and delete button to the horizontal layout
+                horizontalLayout.addView(newSpinner)
+                horizontalLayout.addView(deleteButton)
 
-                // Add the account container to the main container (boxContainer)
+                // Add the horizontal layout to the container
                 val boxContainer = findViewById<LinearLayout>(R.id.box_container)
-                boxContainer.addView(accountContainer)
+                boxContainer.addView(horizontalLayout)
 
-                // Change the button text to say "Add Another Account"
-                addSlotButton.text = "Add Another Account"
-                spinnerCount++ // Increment spinner count
-            } else {
-                Toast.makeText(this, "You can only add up to 4 accounts.", Toast.LENGTH_SHORT).show()
+
             }
         }
 
@@ -118,7 +131,11 @@ class ServiceLinkPage : AppCompatActivity() {
                 val intent = Intent(this, BudgetPage::class.java)
                 startActivity(intent)
             } else {
-                Toast.makeText(this, "Please add at least one account before proceeding.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    this,
+                    "Please add at least one account before proceeding.",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
 
@@ -129,7 +146,10 @@ class ServiceLinkPage : AppCompatActivity() {
 
         // Add toggle to open and close drawer
         val toggle = ActionBarDrawerToggle(
-            this, drawerLayout, R.string.navigation_drawer_open, R.string.navigation_drawer_close
+            this,
+            drawerLayout,
+            R.string.navigation_drawer_open,
+            R.string.navigation_drawer_close
         )
         drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
@@ -143,16 +163,20 @@ class ServiceLinkPage : AppCompatActivity() {
                     val intent = Intent(this, BudgetPage::class.java)
                     startActivity(intent)
                 }
+
                 R.id.user_info_button -> {
                     // Handle the user info page click
                     Toast.makeText(this, "User Info Clicked", Toast.LENGTH_SHORT).show()
                     val intent = Intent(this, UserInfoPage::class.java)
                     startActivity(intent)
                 }
+
                 R.id.service_link_button -> {
                     // Handle linked accounts page click
-                    Toast.makeText(this, "Already on Linked Accounts", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Already on Linked Accounts", Toast.LENGTH_SHORT)
+                        .show()
                 }
+
                 R.id.logout_button -> {
                     // Handle logout
                     Toast.makeText(this, "Log Out Clicked", Toast.LENGTH_SHORT).show()
@@ -169,12 +193,13 @@ class ServiceLinkPage : AppCompatActivity() {
         toggle.syncState()
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Handle action bar item clicks to open/close the drawer
-        return if (item.itemId == android.R.id.home) {
-            drawerLayout.openDrawer(navView)
-            true
-        } else super.onOptionsItemSelected(item)
+        override fun onOptionsItemSelected(item: MenuItem): Boolean {
+            // Handle action bar item clicks to open/close the drawer
+            return if (item.itemId == android.R.id.home) {
+                drawerLayout.openDrawer(navView)
+                true
+            } else super.onOptionsItemSelected(item)
+        }
+
     }
 
-}
