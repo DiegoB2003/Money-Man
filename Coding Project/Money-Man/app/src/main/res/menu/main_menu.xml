@@ -17,5 +17,11 @@
             android:icon="@drawable/baseline_logout_24"
             android:title="Log Out"
             />
+
+        <item android:id="@+id/close_button"
+            android:icon="@drawable/baseline_close_24"
+            android:title="Close"
+            />
+
     </group>
 </menu>

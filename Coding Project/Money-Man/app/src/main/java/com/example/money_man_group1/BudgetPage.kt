@@ -3,10 +3,12 @@ package com.example.money_man_group1
 import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
+import android.widget.Button
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.GravityCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.drawerlayout.widget.DrawerLayout
@@ -92,10 +94,20 @@ class BudgetPage : AppCompatActivity() {
                     val intent = Intent(this, MainActivity::class.java)
                     startActivity(intent)
                 }
+                R.id.close_button -> {
+                    drawerLayout.closeDrawers() // Close the drawer
+                }
+
             }
             drawerLayout.closeDrawers()
             true
         }
+        // Set up the button to open the drawer #################NEW
+        val openDrawerButton: Button = findViewById(R.id.open_drawer_button)
+        openDrawerButton.setOnClickListener {
+            drawerLayout.openDrawer(GravityCompat.START) // Open the drawer
+        }
+
 
         // Enable toggle button in the action bar
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
