@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "671378453146",
+    "project_id": "money-man-f922d",
+    "storage_bucket": "money-man-f922d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:671378453146:android:b21a5aebadeaba67652523",
+        "android_client_info": {
+          "package_name": "com.example.money_man_group1"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCLLxlpvUEMXok3cLj78WZ4f9OfZlzAQY8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
