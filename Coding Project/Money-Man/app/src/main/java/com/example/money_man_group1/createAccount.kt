@@ -3,17 +3,19 @@ package com.example.money_man_group1
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
-import android.widget.EditText
-import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import java.io.File
-import java.io.FileWriter
-import java.io.IOException
+import com.example.money_man_group1.databinding.ActivityCreateAccountBinding
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 
 class createAccount : AppCompatActivity() {
+    
+    lateinit var binding : ActivityCreateAccountBinding //Binding for the activity to xml file
+    private lateinit var firebaseReference: DatabaseReference //reference to firebase database
+    
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -24,6 +26,9 @@ class createAccount : AppCompatActivity() {
             insets
         }
 
+        binding = ActivityCreateAccountBinding.inflate(layoutInflater) //Initialize the binding
+        setContentView(binding.root) //Set the content view to the root view of the binding
+
         // Back button functionality
         val prevButton = findViewById<Button>(R.id.backbutton)
         prevButton.setOnClickListener {
@@ -31,58 +36,18 @@ class createAccount : AppCompatActivity() {
             startActivity(intent)
         }
 
+        firebaseReference = FirebaseDatabase.getInstance().getReference("Users")
         // Next button functionality
         val nextButton = findViewById<Button>(R.id.nextbutton)
-        nextButton.setOnClickListener {
-            //Saves all data from text boxes to be saved into files
-            val firstName = findViewById<EditText>(R.id.firstNameBox).text.toString()
-            val lastName = findViewById<EditText>(R.id.lastNameBox).text.toString()
-            val email = findViewById<EditText>(R.id.editTextTextEmailAddress).text.toString()
-            val password = findViewById<EditText>(R.id.password_toggle).text.toString()
-            val phoneNumber = findViewById<EditText>(R.id.phoneNumber).text.toString()
-            val yearlyIncome = findViewById<EditText>(R.id.yearlyIncomeText).text.toString()
-            val dateOfBirth = findViewById<EditText>(R.id.bdayBox).text.toString()
-
-
-            // Check if any of the fields are empty or yearlyIncome is invalid
-            if (firstName.isEmpty() || lastName.isEmpty() || email.isEmpty() || password.isEmpty() ||
-                phoneNumber.isEmpty() || yearlyIncome.isEmpty() || dateOfBirth.isEmpty()) {
-                Toast.makeText(this, "Please fill out all fields", Toast.LENGTH_SHORT).show()
-            } else {
-                // convert yearly income to double
-                val yearlyIncome = yearlyIncome.toDouble()
-
-                val person = Person(firstName, lastName, email, password, phoneNumber, yearlyIncome, dateOfBirth,
-                    food = 0.0, education = 0.0, hobbies = 0.0, health = 0.0, housing = 0.0, other = 0.0)
-
-                writeToFile(person) // Writes object to file
-
+        binding.nextbutton.setOnClickListener {
+            //Commented out until I finish soon :)
+//                firebaseReference.setValue("User Information")
+//                    .addOnCompleteListener{
+//                        Toast.makeText(this, "Data Saved!", Toast.LENGTH_SHORT).show()
+//                    }
                 // Go to service linking page
                 val intent = Intent(this, ServiceLinkPage::class.java)
                 startActivity(intent)
-            }
-
-        }
-    }
-
-    private fun writeToFile(person: Person) {
-        val file = File(filesDir, "UserData.txt") //creates new file which is saved on emulated device
-        try {
-            //Creates string with all users data to save
-            val data = "${person.firstName}, ${person.lastName}, ${person.email}, ${person.password}, " +
-                    "${person.phoneNumber}, ${person.yearlyIncome}, ${person.dateOfBirth}, " +
-                    "${person.food}, ${person.education}, ${person.hobbies}, ${person.health}, " +
-                    "${person.housing}, ${person.other}\n"
-
-            //Append to the file using FileWriter to not over write previous data
-            FileWriter(file, true).use { writer ->
-                writer.append(data)  // Append the data to the file
-            }
-            //Shows notification on phone that data saved in the file
-            Toast.makeText(this, "Data Saved!", Toast.LENGTH_SHORT).show()
-        } catch (e: IOException) {
-            e.printStackTrace() //prints out error and shows notification that data didn't save to the file
-            Toast.makeText(this, "Failed to save data: ${e.message}", Toast.LENGTH_LONG).show()
         }
     }
 }

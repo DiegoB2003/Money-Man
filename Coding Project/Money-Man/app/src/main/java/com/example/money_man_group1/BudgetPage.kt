@@ -39,22 +39,16 @@ class BudgetPage : AppCompatActivity() {
             insets
         }
 
-        val currentUser = MainActivity.currentLogin //gets currently logged in person
-
         anyChartView = findViewById(R.id.any_chart_view) //gets pie chart object from xml page using its id
         pieChart = AnyChart.pie() //creates pie chart from library
         anyChartView.setChart(pieChart)
 
-        //Calls addToChart function using name and cost of what the user spent
-        if (currentUser != null) { //if the currentUser isn't null, gets and inserts all amounts spent
-            addToChart("Food", currentUser.food)
-            addToChart("Education", currentUser.education)
-            addToChart("Hobbies", currentUser.hobbies)
-            addToChart("Health", currentUser.health)
-            addToChart("Housing", currentUser.housing)
-            addToChart("Other", currentUser.other)
-        }
-
+        addToChart("Food", 100.0) //Pie chart default values for now
+        addToChart("Education", 320.0)
+        addToChart("Hobbies", 17.2)
+        addToChart("Health", 1000.83)
+        addToChart("Housing", 35.0)
+        addToChart("Other", 55.0)
 
 
         // Nav view configurations
