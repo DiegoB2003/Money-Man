@@ -46,7 +46,7 @@ class createAccount : AppCompatActivity() {
 //                        Toast.makeText(this, "Data Saved!", Toast.LENGTH_SHORT).show()
 //                    }
                 // Go to service linking page
-                val intent = Intent(this, ServiceLinkPage::class.java)
+                val intent = Intent(this, AddingCategoryPage::class.java)
                 startActivity(intent)
         }
     }

@@ -12,24 +12,23 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import android.view.View
-import android.widget.Spinner
-import android.widget.ArrayAdapter
+import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.material.navigation.NavigationView
 
-class ServiceLinkPage : AppCompatActivity() {
+class AddingCategoryPage : AppCompatActivity() {
     // Navigation vars
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var navView: NavigationView
 
-    private var spinnerCount = 0 // Counter for spinners
+    private var categoryCount = 0 // Counter for spinners
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_service_link_page)
+        setContentView(R.layout.activity_adding_category_page)
 
         // Apply window insets listener
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
@@ -39,101 +38,144 @@ class ServiceLinkPage : AppCompatActivity() {
         }
 
         // Find the button inside the onCreate() method
-        val addSlotButton = findViewById<Button>(R.id.add_slot_button)
+        val addSlotButton = findViewById<Button>(R.id.add_Category_button)
         val backButton = findViewById<Button>(R.id.backbutton)
         val doneButton = findViewById<Button>(R.id.donebutton)
         val instructionsTextView = findViewById<TextView>(R.id.instructions)
 
         // Set onClickListener for the Add Slot
         addSlotButton.setOnClickListener {
-            // Check if the spinner count is greater than or equal to 4, and display a toast message if so
-            if (spinnerCount >= 4) { // Check if the spinner count is greater than or equal to 4
-                Toast.makeText(this, "You can only add up to 4 accounts.", Toast.LENGTH_SHORT).show()
+            if (categoryCount >= 10) {
+                Toast.makeText(this, "You can only add up to 10 Categories.", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
-            }
-            else {
-                // Create a horizontal layout to hold the spinner and delete button
+            } else {
+                // Hide the instructions text view
+                instructionsTextView.visibility = View.GONE
+
+                // Create a vertical layout to hold the EditText boxes and the delete button
+                val verticalLayout = LinearLayout(this).apply {
+                    orientation = LinearLayout.VERTICAL
+                    layoutParams = LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                    ).apply {
+                        setMargins(0, 32, 0, 0) // Increase top margin for more space
+                    }
+                }
+
+                // Create the main EditText
+                val mainEditText = EditText(this).apply {
+                    layoutParams = LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                    )
+                    hint = "Enter Category Name"
+                    categoryCount++
+                }
+
+                // Create a horizontal layout to contain the two smaller EditTexts
                 val horizontalLayout = LinearLayout(this).apply {
                     orientation = LinearLayout.HORIZONTAL
                     layoutParams = LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.MATCH_PARENT,
                         LinearLayout.LayoutParams.WRAP_CONTENT
-                    ).apply {
-                        setMargins(0, 32, 0, 0) // Increase top margin for more space between spinners (32dp)
-                    }
+                    )
                 }
 
-                // Create the new Spinner
-                val newSpinner = Spinner(this).apply {
-                    instructionsTextView.visibility =
-                        View.GONE // Hide instructions if spinner is added
+                // Create the first smaller EditText
+                val smallerEditText1 = EditText(this).apply {
                     layoutParams = LinearLayout.LayoutParams(
-                        0, // Set weight of the spinner to take up available space
+                        0, // Set weight to distribute space evenly
+                        LinearLayout.LayoutParams.WRAP_CONTENT,
+                        1f // Use 1 weight to make it smaller compared to the main EditText
+                    )
+                    hint = "Brief Description"
+                }
+
+                // Create the second smaller EditText
+                val smallerEditText2 = EditText(this).apply {
+                    layoutParams = LinearLayout.LayoutParams(
+                        0,
                         LinearLayout.LayoutParams.WRAP_CONTENT,
                         1f
-
                     )
+                    hint = "Max Spending Limit"
+                }
 
-                    spinnerCount++ // Increment spinner count
-
-                    // Create an array adapter for the spinner and set the dropdown items
-                    val options =
-                        arrayOf("Select An Account", "Bank Account", "CashApp", "Paypal", "Venmo")
-                    val adapter = ArrayAdapter(
-                        this@ServiceLinkPage,
-                        android.R.layout.simple_spinner_item,
-                        options
-                    )
-                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                    this.adapter = adapter
+                // Create a horizontal layout to hold the buttons
+                val buttonLayout = LinearLayout(this).apply {
+                    orientation = LinearLayout.HORIZONTAL
+                    layoutParams = LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                    ).apply {
+                        setMargins(0, 16, 0, 0) // Adjust margin as needed
+                    }
                 }
 
                 // Create the delete button
                 val deleteButton = Button(this).apply {
                     text = "Delete"
                     layoutParams = LinearLayout.LayoutParams(
+                        0, // Weight set to 0 to take up a proportional space
                         LinearLayout.LayoutParams.WRAP_CONTENT,
-                        LinearLayout.LayoutParams.WRAP_CONTENT
+                        1f // Set weight to 1 for equal width among buttons
                     )
                     setOnClickListener {
-                        // Remove the horizontal layout containing the spinner and delete button
-                        (horizontalLayout.parent as? LinearLayout)?.removeView(horizontalLayout)
-                        --spinnerCount // Decrement spinner count
+                        (verticalLayout.parent as? LinearLayout)?.removeView(verticalLayout)
+                        --categoryCount
 
-                        if (spinnerCount == 0) { // Check if spinner count is 0
-                            // Show instructions if spinner is deleted
+                        if (categoryCount == 0) {
                             instructionsTextView.visibility = View.VISIBLE
                         }
                     }
-
-
                 }
 
-                // Add the spinner and delete button to the horizontal layout
-                horizontalLayout.addView(newSpinner)
-                horizontalLayout.addView(deleteButton)
+                // Create the set button
+                val setButton = Button(this).apply {
+                    text = "Set"
+                    layoutParams = LinearLayout.LayoutParams(
+                        0,
+                        LinearLayout.LayoutParams.WRAP_CONTENT,
+                        1f
+                    )
+                }
 
-                // Add the horizontal layout to the container
+                // Add the buttons to the button layout horizontally
+                buttonLayout.addView(deleteButton)
+                buttonLayout.addView(setButton)
+
+                // Add the smaller EditTexts to the horizontal layout
+                horizontalLayout.addView(smallerEditText1)
+                horizontalLayout.addView(smallerEditText2)
+
+                // Add the main EditText, the horizontal layout with smaller EditTexts, and the delete button to the vertical layout
+                verticalLayout.addView(mainEditText)
+                verticalLayout.addView(horizontalLayout)
+
+                // Add the button layout to the vertical layout
+                verticalLayout.addView(buttonLayout)
+
+                // Add the vertical layout to the container
                 val boxContainer = findViewById<LinearLayout>(R.id.box_container)
-                boxContainer.addView(horizontalLayout)
-
-
+                boxContainer.addView(verticalLayout)
             }
         }
 
+        // Back button to go back to create account page
         backButton.setOnClickListener {
             val intent = Intent(this, createAccount::class.java)
             startActivity(intent)
         }
 
         doneButton.setOnClickListener {
-            if (spinnerCount > 0) { // Check if at least one spinner is added
+            if (categoryCount > 0) { // Check if at least one spinner is added
                 val intent = Intent(this, BudgetPage::class.java)
                 startActivity(intent)
             } else {
                 Toast.makeText(
                     this,
-                    "Please add at least one account before proceeding.",
+                    "Please add at least one category before proceeding.",
                     Toast.LENGTH_SHORT
                 ).show()
             }

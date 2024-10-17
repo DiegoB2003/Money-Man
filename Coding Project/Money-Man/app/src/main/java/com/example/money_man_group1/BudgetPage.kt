@@ -79,7 +79,7 @@ class BudgetPage : AppCompatActivity() {
                 R.id.service_link_button -> {
                     // Handle linked accounts page click
                     Toast.makeText(this, "Linked Accounts Clicked", Toast.LENGTH_SHORT).show()
-                    val intent = Intent(this, ServiceLinkPage::class.java)
+                    val intent = Intent(this, AddingCategoryPage::class.java)
                     startActivity(intent)
                 }
                 R.id.logout_button -> {

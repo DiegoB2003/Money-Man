@@ -5,7 +5,7 @@
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ServiceLinkPage">
+    tools:context=".AddingCategoryPage">
 
     <!-- Main content -->
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -19,42 +19,45 @@
             android:layout_height="100dp"
             android:layout_marginTop="16dp"
             android:gravity="center"
-            android:text="Link Accounts"
+            android:text="Add Spending Categories"
             android:textSize="30sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.497"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:id="@+id/instructions"
-            android:layout_width="250dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="176dp"
-            android:gravity="center"
-            android:text="Press the Add Account button to link an account and Done when finished"
-            android:textSize="25sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.496"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/Title" />
+            <TextView
+                android:id="@+id/instructions"
+                android:layout_width="250dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="176dp"
+                android:gravity="center"
+                android:text="Press the Add Category button and press Done when finished"
+                android:textSize="25sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.496"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/Title" />
 
-        <LinearLayout
-            android:id="@+id/box_container"
+        <!-- Scrollable container for dynamically added content -->
+        <ScrollView
+            android:id="@+id/scroll_view"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintTop_toBottomOf="@+id/Title"
+            android:layout_height="0dp"
+            app:layout_constraintTop_toBottomOf="@+id/instructions"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
-
-            <!-- Spinner for account selection -->
-            <Spinner
-                android:id="@+id/account_spinner"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/backbutton">
+            <LinearLayout
+                android:id="@+id/box_container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:visibility="gone"/> <!-- Set to gone initially -->
-        </LinearLayout>
+                android:orientation="vertical"
+                app:layout_constraintTop_toBottomOf="@+id/Title"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+            </LinearLayout>
+        </ScrollView>
 
         <!-- First Button: Back -->
         <Button
@@ -65,15 +68,15 @@
             android:textColor="@android:color/white"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/add_slot_button"
+            app:layout_constraintEnd_toStartOf="@id/add_Category_button"
             android:layout_margin="16dp" />
 
         <!-- Second Button: Add Account -->
         <Button
-            android:id="@+id/add_slot_button"
+            android:id="@+id/add_Category_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Add Account"
+            android:text="Add Category"
             android:textColor="@android:color/white"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@id/backbutton"
@@ -88,7 +91,7 @@
             android:text="Done"
             android:textColor="@android:color/white"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@id/add_slot_button"
+            app:layout_constraintStart_toEndOf="@id/add_Category_button"
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_margin="16dp" />
     </androidx.constraintlayout.widget.ConstraintLayout>
