@@ -215,8 +215,15 @@ class AddingCategoryPage : AppCompatActivity() {
 
                 R.id.service_link_button -> {
                     // Handle linked accounts page click
-                    Toast.makeText(this, "Already on Linked Accounts", Toast.LENGTH_SHORT)
+                    Toast.makeText(this, "Already on Add Categories", Toast.LENGTH_SHORT)
                         .show()
+                }
+
+                R.id.notifications_page_button -> {
+                    // Handle linked accounts page click
+                    Toast.makeText(this, "Notifications Clicked", Toast.LENGTH_SHORT).show()
+                    val intent = Intent(this, NotificationsPage::class.java)
+                    startActivity(intent)
                 }
 
                 R.id.logout_button -> {

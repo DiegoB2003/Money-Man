@@ -2,4 +2,6 @@
     <string name="app_name">Money-Man_Group1</string>
     <string name="navigation_drawer_open">Open Drawer Menu</string>
     <string name="navigation_drawer_close">Close Drawer Menu</string>
+    <string name="notifications_page_title">Notifications</string>
+
 </resources>

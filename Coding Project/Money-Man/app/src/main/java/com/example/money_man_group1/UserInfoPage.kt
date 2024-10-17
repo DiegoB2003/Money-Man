@@ -61,8 +61,14 @@ class UserInfoPage : AppCompatActivity() {
                 }
                 R.id.service_link_button -> {
                     // Handle linked accounts page click
-                    Toast.makeText(this, "Linked Accounts Clicked", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Add Categories Clicked", Toast.LENGTH_SHORT).show()
                     val intent = Intent(this, AddingCategoryPage::class.java)
+                    startActivity(intent)
+                }
+                R.id.notifications_page_button -> {
+                    // Handle linked accounts page click
+                    Toast.makeText(this, "Notifications Clicked", Toast.LENGTH_SHORT).show()
+                    val intent = Intent(this, NotificationsPage::class.java)
                     startActivity(intent)
                 }
                 R.id.logout_button -> {

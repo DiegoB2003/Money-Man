@@ -12,44 +12,22 @@ import androidx.core.view.GravityCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.drawerlayout.widget.DrawerLayout
-import com.anychart.AnyChart
-import com.anychart.AnyChartView
-import com.anychart.chart.common.dataentry.DataEntry
-import com.anychart.chart.common.dataentry.ValueDataEntry
-import com.anychart.charts.Pie
 import com.google.android.material.navigation.NavigationView
 
-class BudgetPage : AppCompatActivity() {
+class NotificationsPage : AppCompatActivity() {
     // Navigation vars
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var navView: NavigationView
 
-    // Pie chart vars
-    private val pieChartData: ArrayList<DataEntry> = ArrayList() //ArrayList to hold data for pie chart
-    private lateinit var pieChart: Pie //Declare pie chart var
-    private lateinit var anyChartView: AnyChartView //Declare chart view var
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_budget_page)
+        setContentView(R.layout.activity_notifications_page)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-
-        anyChartView = findViewById(R.id.any_chart_view) //gets pie chart object from xml page using its id
-        pieChart = AnyChart.pie() //creates pie chart from library
-        anyChartView.setChart(pieChart)
-
-        addToChart("Food", 100.0) //Pie chart default values for now
-        addToChart("Education", 320.0)
-        addToChart("Hobbies", 17.2)
-        addToChart("Health", 1000.83)
-        addToChart("Housing", 35.0)
-        addToChart("Other", 55.0)
-
 
         // Nav view configurations
         // Initialize DrawerLayout and NavigationView
@@ -68,7 +46,9 @@ class BudgetPage : AppCompatActivity() {
             when (menuItem.itemId) {
                 R.id.budgeting_page_button -> {
                     // Handle the budgeting page click
-                    Toast.makeText(this, "Already on Budgeting Page", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Budgeting Page Clicked", Toast.LENGTH_SHORT).show()
+                    val intent = Intent(this, BudgetPage::class.java)
+                    startActivity(intent)
                 }
                 R.id.user_info_button -> {
                     // Handle the user info page click
@@ -84,9 +64,7 @@ class BudgetPage : AppCompatActivity() {
                 }
                 R.id.notifications_page_button -> {
                     // Handle linked accounts page click
-                    Toast.makeText(this, "Notifications Clicked", Toast.LENGTH_SHORT).show()
-                    val intent = Intent(this, NotificationsPage::class.java)
-                    startActivity(intent)
+                    Toast.makeText(this, "Already on Notifications Page", Toast.LENGTH_SHORT).show()
                 }
                 R.id.logout_button -> {
                     // Handle logout
@@ -112,14 +90,6 @@ class BudgetPage : AppCompatActivity() {
         // Enable toggle button in the action bar
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         toggle.syncState()
-    }
-
-    //function adds name and cost of what user spend into the
-    //pieChartData arraylist and then sets the new data to
-    //the pie chart so it is displayed
-    private fun addToChart (name: String, cost: Double) {
-        pieChartData.add(ValueDataEntry(name, cost)) //adds values to arraylist
-        pieChart.data(pieChartData)//sets the array of data to the pie chart to display
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
