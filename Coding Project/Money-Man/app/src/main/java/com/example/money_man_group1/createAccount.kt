@@ -3,6 +3,8 @@ package com.example.money_man_group1
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
+import android.widget.EditText
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -36,18 +38,39 @@ class createAccount : AppCompatActivity() {
             startActivity(intent)
         }
 
-        firebaseReference = FirebaseDatabase.getInstance().getReference("Users")
         // Next button functionality
         val nextButton = findViewById<Button>(R.id.nextbutton)
         binding.nextbutton.setOnClickListener {
-            //Commented out until I finish soon :)
-//                firebaseReference.setValue("User Information")
-//                    .addOnCompleteListener{
-//                        Toast.makeText(this, "Data Saved!", Toast.LENGTH_SHORT).show()
-//                    }
+            //Saves all data from text boxes to be saved into files
+            val firstName = findViewById<EditText>(R.id.firstNameBox).text.toString()
+            val lastName = findViewById<EditText>(R.id.lastNameBox).text.toString()
+            val username = findViewById<EditText>(R.id.usernameBox).text.toString()
+            val password = findViewById<EditText>(R.id.password_toggle).text.toString()
+            val pass2 = findViewById<EditText>(R.id.password_toggle2).text.toString()
+            val phoneNumber = findViewById<EditText>(R.id.phoneNumber).text.toString()
+            val yearlyIncome = findViewById<EditText>(R.id.yearlyIncomeText).text.toString()
+            val dateOfBirth = findViewById<EditText>(R.id.bdayBox).text.toString()
+
+            //Makes sure no text box is empty and passwords boxed match
+            if (firstName.isEmpty() || lastName.isEmpty() || username.isEmpty() || password.isEmpty() ||
+                phoneNumber.isEmpty() || yearlyIncome.isEmpty() || dateOfBirth.isEmpty()) {
+                Toast.makeText(this, "Please fill out all fields", Toast.LENGTH_SHORT).show()
+            } else {
+                if (password != pass2) { //passwords do not match don't continue
+                    Toast.makeText(this, "Passwords do not match", Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
+                val income = yearlyIncome.toDouble() //Converts income to double to put into UserData
+                val person = UserData(firstName, lastName, username, password, phoneNumber, income, dateOfBirth)
+                firebaseReference = FirebaseDatabase.getInstance().getReference("Users") //Gets reference to firebase database
+                firebaseReference.child(username).setValue(person) //Puts data into firebase database and separated by username
+                    .addOnCompleteListener { //If data is saved successfully says in app
+                        Toast.makeText(this, "Data Saved!", Toast.LENGTH_SHORT).show()
+                    }
                 // Go to service linking page
                 val intent = Intent(this, AddingCategoryPage::class.java)
                 startActivity(intent)
+            }
         }
     }
 }
