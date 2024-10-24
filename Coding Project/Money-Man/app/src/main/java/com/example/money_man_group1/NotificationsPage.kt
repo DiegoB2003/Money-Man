@@ -12,9 +12,16 @@ import androidx.core.view.GravityCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.navigation.NavigationView
 
 class NotificationsPage : AppCompatActivity() {
+
+    // Notifications Recycler View vars
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var adapter: NotificationsAdapter
+
     // Navigation vars
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var navView: NavigationView
@@ -28,6 +35,21 @@ class NotificationsPage : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+
+        // Initialize RecyclerView
+        recyclerView = findViewById(R.id.notificationsRecyclerView)
+        recyclerView.layoutManager = LinearLayoutManager(this)
+
+        // Sample data (replace with actual notifications later)
+        val notifications = listOf(
+            "Alert: Your budget is over the limit!",
+            "Notification: New category added",
+            "Alert: You're so damn broke!"
+        )
+
+        // Set up recycler view adapter
+        adapter = NotificationsAdapter(notifications)
+        recyclerView.adapter = adapter
 
         // Nav view configurations
         // Initialize DrawerLayout and NavigationView
