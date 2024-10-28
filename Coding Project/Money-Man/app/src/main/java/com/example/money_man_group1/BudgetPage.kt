@@ -63,6 +63,13 @@ class BudgetPage : AppCompatActivity() {
         drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
 
+        //setup the activity log button
+        val activityLogButton: Button = findViewById(R.id.activiyLogButton)
+        activityLogButton.setOnClickListener {
+            val intent = Intent(this, ActivityLog::class.java)
+            startActivity(intent)
+        }
+
         // Handle navigation menu item clicks
         navView.setNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
