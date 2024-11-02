@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
 import android.widget.Button
+import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.ActionBarDrawerToggle
@@ -12,11 +13,14 @@ import androidx.core.view.GravityCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.drawerlayout.widget.DrawerLayout
-import com.google.android.material.navigation.NavigationView
 import com.example.money_man_group1.databinding.ActivityUserInfoPageBinding
-import android.widget.EditText
+import com.google.android.material.navigation.NavigationView
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+
 
 class UserInfoPage : AppCompatActivity() {
+    private lateinit var firebaseReference: DatabaseReference //reference to firebase database
     // Navigation vars
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var navView: NavigationView
@@ -85,6 +89,19 @@ class UserInfoPage : AppCompatActivity() {
         }
 
         binding.editButton.setOnClickListener {
+            if (binding.editButton.text == "Save"){
+                updateUserData(
+                    binding.userNameText.text.toString(),
+                    binding.firstNameText.text.toString(),
+                    binding.LastNameText.text.toString(),
+                    binding.phoneNumberText.text.toString(),
+                    binding.passwordText.text.toString(),
+                    binding.DOBText.text.toString(),
+                    binding.yearlyIncomeText.text.toString()
+                ) //calls update user data function to put all new values in database
+                val intent = Intent(this, BudgetPage::class.java) //when clicked user info page goes to budget page
+                startActivity(intent)
+            }
             // Toggle visibility on edit button click
             val isEditing = binding.editButton.text == "Edit"
             setEditTextVisibility(isEditing)
@@ -180,4 +197,36 @@ class UserInfoPage : AppCompatActivity() {
             true
         } else super.onOptionsItemSelected(item)
     }
+
+    private fun updateUserData(username: String, firstName: String, lastName: String, phoneNumber: String, password: String, dateOfBirth: String, yearlyIncome: String) {
+        //Make sure no values are empty
+        if (username.isEmpty() || firstName.isEmpty() || lastName.isEmpty() ||
+            phoneNumber.isEmpty() || password.isEmpty() || dateOfBirth.isEmpty() || yearlyIncome.isEmpty()) {
+            Toast.makeText(this, "All fields must be filled out", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val incomeDouble = yearlyIncome.toDouble() //Converts income to Double
+
+        val oldUsername = MainActivity.userData?.username //Get the old username from userData
+        MainActivity.userData = UserData(firstName, lastName, username, password, phoneNumber, incomeDouble, dateOfBirth) //Update userData with new values in MainActivity
+
+        firebaseReference = FirebaseDatabase.getInstance().getReference("Users") //Get reference to Firebase
+
+        //If the old username is not the same as the new one, remove the old entry from database
+        if (oldUsername != null && oldUsername != username) {
+            firebaseReference.child(oldUsername).removeValue() //Delete the old user from table
+        }
+
+        //Insert the updated user data into Firebase
+        firebaseReference.child(username).setValue(MainActivity.userData).addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                Toast.makeText(this, "User Updated", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(this, "Failed to update user", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
 }
+
