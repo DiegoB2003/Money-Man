@@ -66,9 +66,16 @@ class createAccount : AppCompatActivity() {
                 firebaseReference.child(username).setValue(person) //Puts data into firebase database and separated by username
                     .addOnCompleteListener { //If data is saved successfully says in app
                         Toast.makeText(this, "Data Saved!", Toast.LENGTH_SHORT).show()
+
+                        val userInfo = UserSpendingInfo(numberOfSpendingCategories = 0)
+
+                        //now we simply create a row for the user on the userSpendingInfo table
+                        firebaseReference = FirebaseDatabase.getInstance().getReference("userSpendingInfo")
+                        firebaseReference.child(username).setValue(userInfo)
+                        
                     }
                 // Go to service linking page
-                val intent = Intent(this, AddingCategoryPage::class.java)
+                val intent = Intent(this, BudgetPage::class.java)
                 startActivity(intent)
             }
         }

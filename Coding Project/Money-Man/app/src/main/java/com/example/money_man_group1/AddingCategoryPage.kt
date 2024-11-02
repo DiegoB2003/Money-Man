@@ -45,7 +45,7 @@ class AddingCategoryPage : AppCompatActivity() {
 
         // Set onClickListener for the Add Slot
         addSlotButton.setOnClickListener {
-            if (categoryCount >= 10) {
+            if (categoryCount >= 6) {
                 Toast.makeText(this, "You can only add up to 10 Categories.", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             } else {
