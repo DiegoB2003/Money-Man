@@ -28,7 +28,8 @@ class AddingCategoryPage : AppCompatActivity() {
 
     private var categoryCount = 0 // Counter for spinners
 
-
+    //map will help us map the category name to its actual numerical value
+    val categoryToNumberMap = mapOf("categoryOne" to 1, "categoryTwo" to 2, "categoryThree" to 3,"categoryFour" to 4,"categoryFive" to 5,"categorySix" to 6)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -146,6 +147,8 @@ class AddingCategoryPage : AppCompatActivity() {
 
                 // Create the set button
                 val setButton = Button(this).apply {
+
+                    //here we will set the values to the class and
                     text = "Set"
                     layoutParams = LinearLayout.LayoutParams(
                         0,

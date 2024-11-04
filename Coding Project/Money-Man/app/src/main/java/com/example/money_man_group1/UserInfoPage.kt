@@ -63,6 +63,10 @@ class UserInfoPage : AppCompatActivity() {
 
         // Retrieve user data from MainActivity
         val userData = MainActivity.userData
+
+        //save the original username
+        val originalUsername = userData?.username
+
         if (userData != null) {
             binding.textView7.text = userData.firstName
             binding.textView12.text = userData.lastName
@@ -216,7 +220,8 @@ class UserInfoPage : AppCompatActivity() {
         //If the old username is not the same as the new one, remove the old entry from database
         if (oldUsername != null && oldUsername != username) {
             firebaseReference.child(oldUsername).removeValue() //Delete the old user from table
-            renameFirebaseKey("userSpendingInfo", "oldUsername","username") //now we rename the key in our userSpendingInfo table
+
+            renameFirebaseKey("userSpendingInfo", oldUsername,username) //now we rename the key in our userSpendingInfo table
         }
 
         //Insert the updated user data into Firebase
