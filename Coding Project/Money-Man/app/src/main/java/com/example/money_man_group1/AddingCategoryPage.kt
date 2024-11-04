@@ -17,18 +17,24 @@ import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.material.navigation.NavigationView
+import com.google.firebase.database.DatabaseReference
 
 class AddingCategoryPage : AppCompatActivity() {
     // Navigation vars
+    private lateinit var firebaseReference: DatabaseReference //reference to firebase database
+
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var navView: NavigationView
 
     private var categoryCount = 0 // Counter for spinners
 
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_adding_category_page)
+
 
         // Apply window insets listener
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
@@ -41,12 +47,19 @@ class AddingCategoryPage : AppCompatActivity() {
         val addSlotButton = findViewById<Button>(R.id.add_Category_button)
         val backButton = findViewById<Button>(R.id.backbutton)
         val doneButton = findViewById<Button>(R.id.donebutton)
+        val userData = MainActivity.userData    //used to access the user info
         val instructionsTextView = findViewById<TextView>(R.id.instructions)
+
+        //HOW TO ACCESS USERNAME
+        //  userData.username
+
 
         // Set onClickListener for the Add Slot
         addSlotButton.setOnClickListener {
+
+
             if (categoryCount >= 6) {
-                Toast.makeText(this, "You can only add up to 10 Categories.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "You can only add up to 6 Categories.", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             } else {
                 // Hide the instructions text view
@@ -164,7 +177,7 @@ class AddingCategoryPage : AppCompatActivity() {
 
         // Back button to go back to create account page
         backButton.setOnClickListener {
-            val intent = Intent(this, createAccount::class.java)
+            val intent = Intent(this, BudgetPage::class.java)
             startActivity(intent)
         }
 

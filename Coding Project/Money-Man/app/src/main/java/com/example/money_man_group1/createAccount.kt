@@ -67,7 +67,7 @@ class createAccount : AppCompatActivity() {
                     .addOnCompleteListener { //If data is saved successfully says in app
                         Toast.makeText(this, "Data Saved!", Toast.LENGTH_SHORT).show()
 
-                        val userInfo = UserSpendingInfo(numberOfSpendingCategories = 0)
+                        val userInfo = UserSpendingInfo()
 
                         //now we simply create a row for the user on the userSpendingInfo table
                         firebaseReference = FirebaseDatabase.getInstance().getReference("userSpendingInfo")

@@ -216,6 +216,7 @@ class UserInfoPage : AppCompatActivity() {
         //If the old username is not the same as the new one, remove the old entry from database
         if (oldUsername != null && oldUsername != username) {
             firebaseReference.child(oldUsername).removeValue() //Delete the old user from table
+            renameFirebaseKey("userSpendingInfo", "oldUsername","username") //now we rename the key in our userSpendingInfo table
         }
 
         //Insert the updated user data into Firebase

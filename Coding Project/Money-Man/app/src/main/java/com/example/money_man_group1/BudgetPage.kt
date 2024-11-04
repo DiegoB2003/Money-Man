@@ -70,6 +70,12 @@ class BudgetPage : AppCompatActivity() {
             startActivity(intent)
         }
 
+        val addCategory: Button = findViewById(R.id.addCatrgoryButton)
+        addCategory.setOnClickListener {
+            val intent = Intent(this, AddingCategoryPage::class.java)
+            startActivity(intent)
+        }
+
         // Handle navigation menu item clicks
         navView.setNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
