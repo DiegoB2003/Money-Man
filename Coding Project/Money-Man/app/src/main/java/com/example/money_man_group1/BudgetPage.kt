@@ -71,6 +71,7 @@ class BudgetPage : AppCompatActivity() {
         }
 
         val addCategory: Button = findViewById(R.id.addCatrgoryButton)
+
         addCategory.setOnClickListener {
             val intent = Intent(this, AddingCategoryPage::class.java)
             startActivity(intent)

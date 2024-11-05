@@ -19,6 +19,7 @@ import com.google.android.material.navigation.NavigationView
 class NotificationsPage : AppCompatActivity() {
 
     // Notifications Recycler View vars
+
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: NotificationsAdapter
 

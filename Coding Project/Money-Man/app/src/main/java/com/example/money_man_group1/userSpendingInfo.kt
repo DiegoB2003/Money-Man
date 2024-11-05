@@ -9,6 +9,7 @@ data class UserSpendingInfo(
     var categoryFour: Category = Category(),
     var categoryFive: Category = Category(),
     var categorySix: Category = Category()
+
 ) {
     data class Category(
         var isCategoryActive: String = "No",

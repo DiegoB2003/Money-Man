@@ -14,6 +14,7 @@ fun renameFirebaseKey(tableName: String, oldKeyName: String, newKeyName: String)
         val oldKeyRef = tableRef.child(oldKeyName)
         val newKeyRef = tableRef.child(newKeyName)
 
+
         // Attempt to retrieve the data under the old key
         oldKeyRef.get().addOnSuccessListener { dataSnapshot ->
             // Check if the old key actually exists in the database

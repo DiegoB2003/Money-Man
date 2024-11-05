@@ -65,6 +65,7 @@ class UserInfoPage : AppCompatActivity() {
         val userData = MainActivity.userData
 
 
+
         if (userData != null) {
             binding.textView7.text = userData.firstName
             binding.textView12.text = userData.lastName

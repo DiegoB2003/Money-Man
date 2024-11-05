@@ -32,6 +32,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root) //Set the content view to the root view of the binding
 
         val loginButton = findViewById<Button>(R.id.loginScreenButton)
+
         loginButton.setOnClickListener {
             val user = findViewById<EditText>(R.id.editTextUsername).text.toString()
             val pass = findViewById<EditText>(R.id.editTextPassword).text.toString()

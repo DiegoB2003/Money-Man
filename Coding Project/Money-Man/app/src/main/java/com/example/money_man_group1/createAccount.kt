@@ -61,6 +61,7 @@ class createAccount : AppCompatActivity() {
                     return@setOnClickListener
                 }
                 val income = yearlyIncome.toDouble() //Converts income to double to put into UserData
+
                 val person = UserData(firstName, lastName, username, password, phoneNumber, income, dateOfBirth)
                 firebaseReference = FirebaseDatabase.getInstance().getReference("Users") //Gets reference to firebase database
                 firebaseReference.child(username).setValue(person) //Puts data into firebase database and separated by username

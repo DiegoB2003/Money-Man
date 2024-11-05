@@ -179,6 +179,7 @@ class AddingCategoryPage : AppCompatActivity() {
 
             val setButton = Button(this).apply {
                 // Set the button text and layout
+
                 text = "Set"
                 layoutParams = LinearLayout.LayoutParams(
                     0,

@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
+
 class NotificationsAdapter(private val notifications: List<String>) :
     RecyclerView.Adapter<NotificationsAdapter.NotificationViewHolder>() {
 
