@@ -113,8 +113,8 @@ class AddingCategoryPage : AppCompatActivity() {
             // Check if the category is active and retrieve data
             firebaseReference.child(userName).child(categoryToNumberMap[i].toString()).get().addOnSuccessListener { dataSnapshot ->
                 if (dataSnapshot.exists()) {
-                    val isCategoryActive = dataSnapshot.child("isCategoryActive").getValue(String::class.java) ?: "No"
-                    if (isCategoryActive == "Yes") {
+                    val categoryActive = dataSnapshot.child("categoryActive").getValue(String::class.java) ?: "No"
+                    if (categoryActive == "Yes") {
                         // Set actual values if category is active
                         val categoryName = dataSnapshot.child("categoryName").getValue(String::class.java) ?: ""
                         val categoryDescription = dataSnapshot.child("categoryDescription").getValue(String::class.java) ?: ""
@@ -166,7 +166,7 @@ class AddingCategoryPage : AppCompatActivity() {
 
                     // Reset the values in the database
                     val categoryNumber = categoryToNumberMap[i]
-                    firebaseReference.child(userName).child(categoryNumber.toString()).child("isCategoryActive").setValue("No")
+                    firebaseReference.child(userName).child(categoryNumber.toString()).child("categoryActive").setValue("No")
                     firebaseReference.child(userName).child(categoryNumber.toString()).child("categoryName").setValue("")
                     firebaseReference.child(userName).child(categoryNumber.toString()).child("categoryDescription").setValue("")
                     firebaseReference.child(userName).child(categoryNumber.toString()).child("maxSpendingLimit").setValue(0)
@@ -195,7 +195,7 @@ class AddingCategoryPage : AppCompatActivity() {
 
                     val categoryNumber = categoryToNumberMap[i]
                     //update the database with the new values
-                    firebaseReference.child(userName).child(categoryNumber.toString()).child("isCategoryActive").setValue("Yes")
+                    firebaseReference.child(userName).child(categoryNumber.toString()).child("categoryActive").setValue("Yes")
                     firebaseReference.child(userName).child(categoryNumber.toString()).child("categoryName").setValue(categoryName)
                     firebaseReference.child(userName).child(categoryNumber.toString()).child("categoryDescription").setValue(categoryDescription)
                     firebaseReference.child(userName).child(categoryNumber.toString()).child("maxSpendingLimit").setValue(spendingLimit)
