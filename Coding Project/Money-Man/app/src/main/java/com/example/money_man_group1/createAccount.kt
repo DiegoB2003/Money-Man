@@ -75,7 +75,7 @@ class createAccount : AppCompatActivity() {
                         
                     }
                 // Go to service linking page
-                val intent = Intent(this, BudgetPage::class.java)
+                val intent = Intent(this, MainActivity::class.java)
                 startActivity(intent)
             }
         }

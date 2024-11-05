@@ -18,6 +18,10 @@ import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import android.util.Log
+
+
 
 class AddingCategoryPage : AppCompatActivity() {
     // Navigation vars
@@ -26,245 +30,197 @@ class AddingCategoryPage : AppCompatActivity() {
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var navView: NavigationView
 
-    private var categoryCount = 0 // Counter for spinners
-
     //map will help us map the category name to its actual numerical value
-    val categoryToNumberMap = mapOf("categoryOne" to 1, "categoryTwo" to 2, "categoryThree" to 3,"categoryFour" to 4,"categoryFive" to 5,"categorySix" to 6)
+    val categoryToNumberMap = mapOf(
+        1 to "categoryOne",
+        2 to "categoryTwo",
+        3 to "categoryThree",
+        4 to "categoryFour",
+        5 to "categoryFive",
+        6 to "categorySix"
+    )
+    val userName: String = MainActivity.userData?.username
+        ?: "Unknown User"    //retrieve the username of the user to access its data
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_adding_category_page)
 
+        // Initialize counter to 6 to display all categories initially
+        var counter = 6
 
-        // Apply window insets listener
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
-
-        // Find the button inside the onCreate() method
-        val addSlotButton = findViewById<Button>(R.id.add_Category_button)
-        val backButton = findViewById<Button>(R.id.backbutton)
-        val doneButton = findViewById<Button>(R.id.donebutton)
-        val userData = MainActivity.userData    //used to access the user info
-        val instructionsTextView = findViewById<TextView>(R.id.instructions)
-
-        //HOW TO ACCESS USERNAME
-        //  userData.username
-
-
-        // Set onClickListener for the Add Slot
-        addSlotButton.setOnClickListener {
-
-
-            if (categoryCount >= 6) {
-                Toast.makeText(this, "You can only add up to 6 Categories.", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
+        // Access info from the database
+        firebaseReference = FirebaseDatabase.getInstance().getReference("userSpendingInfo")
+        firebaseReference.child(userName).get().addOnSuccessListener { dataSnapshot ->
+            if (dataSnapshot.exists()) {
+                val userSpendingInfo = dataSnapshot.getValue(UserSpendingInfo::class.java)
+                userSpendingInfo?.let {
+                    counter = it.numberOfSpendingCategories
+                    Log.d("UserSpendingInfo", "Number of Spending Categories: $counter")
+                }
             } else {
-                // Hide the instructions text view
-                instructionsTextView.visibility = View.GONE
-
-                // Create a vertical layout to hold the EditText boxes and the delete button
-                val verticalLayout = LinearLayout(this).apply {
-                    orientation = LinearLayout.VERTICAL
-                    layoutParams = LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.MATCH_PARENT,
-                        LinearLayout.LayoutParams.WRAP_CONTENT
-                    ).apply {
-                        setMargins(0, 32, 0, 0) // Increase top margin for more space
-                    }
-                }
-
-                // Create the main EditText
-                val mainEditText = EditText(this).apply {
-                    layoutParams = LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.MATCH_PARENT,
-                        LinearLayout.LayoutParams.WRAP_CONTENT
-                    )
-                    hint = "Enter Category Name"
-                    categoryCount++
-                }
-
-                // Create a horizontal layout to contain the two smaller EditTexts
-                val horizontalLayout = LinearLayout(this).apply {
-                    orientation = LinearLayout.HORIZONTAL
-                    layoutParams = LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.MATCH_PARENT,
-                        LinearLayout.LayoutParams.WRAP_CONTENT
-                    )
-                }
-
-                // Create the first smaller EditText
-                val smallerEditText1 = EditText(this).apply {
-                    layoutParams = LinearLayout.LayoutParams(
-                        0, // Set weight to distribute space evenly
-                        LinearLayout.LayoutParams.WRAP_CONTENT,
-                        1f // Use 1 weight to make it smaller compared to the main EditText
-                    )
-                    hint = "Brief Description"
-                }
-
-                // Create the second smaller EditText
-                val smallerEditText2 = EditText(this).apply {
-                    layoutParams = LinearLayout.LayoutParams(
-                        0,
-                        LinearLayout.LayoutParams.WRAP_CONTENT,
-                        1f
-                    )
-                    hint = "Max Spending Limit"
-                }
-
-                // Create a horizontal layout to hold the buttons
-                val buttonLayout = LinearLayout(this).apply {
-                    orientation = LinearLayout.HORIZONTAL
-                    layoutParams = LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.MATCH_PARENT,
-                        LinearLayout.LayoutParams.WRAP_CONTENT
-                    ).apply {
-                        setMargins(0, 16, 0, 0) // Adjust margin as needed
-                    }
-                }
-
-                // Create the delete button
-                val deleteButton = Button(this).apply {
-                    text = "Delete"
-                    layoutParams = LinearLayout.LayoutParams(
-                        0, // Weight set to 0 to take up a proportional space
-                        LinearLayout.LayoutParams.WRAP_CONTENT,
-                        1f // Set weight to 1 for equal width among buttons
-                    )
-                    setOnClickListener {
-                        (verticalLayout.parent as? LinearLayout)?.removeView(verticalLayout)
-                        --categoryCount
-
-                        if (categoryCount == 0) {
-                            instructionsTextView.visibility = View.VISIBLE
-                        }
-                    }
-                }
-
-                // Create the set button
-                val setButton = Button(this).apply {
-
-                    //here we will set the values to the class and
-                    text = "Set"
-                    layoutParams = LinearLayout.LayoutParams(
-                        0,
-                        LinearLayout.LayoutParams.WRAP_CONTENT,
-                        1f
-                    )
-                }
-
-                // Add the buttons to the button layout horizontally
-                buttonLayout.addView(deleteButton)
-                buttonLayout.addView(setButton)
-
-                // Add the smaller EditTexts to the horizontal layout
-                horizontalLayout.addView(smallerEditText1)
-                horizontalLayout.addView(smallerEditText2)
-
-                // Add the main EditText, the horizontal layout with smaller EditTexts, and the delete button to the vertical layout
-                verticalLayout.addView(mainEditText)
-                verticalLayout.addView(horizontalLayout)
-
-                // Add the button layout to the vertical layout
-                verticalLayout.addView(buttonLayout)
-
-                // Add the vertical layout to the container
-                val boxContainer = findViewById<LinearLayout>(R.id.box_container)
-                boxContainer.addView(verticalLayout)
+                Log.d("UserSpendingInfo", "No data found for user: $userName")
             }
+        }.addOnFailureListener { exception ->
+            Log.e("UserSpendingInfo", "Error getting data", exception)
         }
 
-        // Back button to go back to create account page
-        backButton.setOnClickListener {
+        // Loop to create six category sections
+        val boxContainer = findViewById<LinearLayout>(R.id.box_container)
+        val instructionsTextView = findViewById<TextView>(R.id.instructions)
+        instructionsTextView.visibility = View.GONE // Hide instructions
+
+// Loop to create six category sections
+        for (i in 1..6) {
+            val verticalLayout = LinearLayout(this).apply {
+                orientation = LinearLayout.VERTICAL
+                layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                ).apply {
+                    setMargins(0, 32, 0, 0)
+                }
+            }
+
+            // EditText fields for the category name, description, and spending limit
+            val mainEditText = EditText(this).apply {
+                layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                )
+                hint = "Enter Category Name"
+            }
+
+            val categoryDesc = EditText(this).apply {
+                layoutParams = LinearLayout.LayoutParams(
+                    0,
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    1f
+                )
+                hint = "Brief Description"
+            }
+
+            val maxSpendingLimit = EditText(this).apply {
+                layoutParams = LinearLayout.LayoutParams(
+                    0,
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    1f
+                )
+                hint = "Max Spending Limit"
+            }
+
+            // Check if the category is active and retrieve data
+            firebaseReference.child(userName).child(categoryToNumberMap[i].toString()).get().addOnSuccessListener { dataSnapshot ->
+                if (dataSnapshot.exists()) {
+                    val isCategoryActive = dataSnapshot.child("isCategoryActive").getValue(String::class.java) ?: "No"
+                    if (isCategoryActive == "Yes") {
+                        // Set actual values if category is active
+                        val categoryName = dataSnapshot.child("categoryName").getValue(String::class.java) ?: ""
+                        val categoryDescription = dataSnapshot.child("categoryDescription").getValue(String::class.java) ?: ""
+                        val spendingLimit = dataSnapshot.child("maxSpendingLimit").getValue(Int::class.java) ?: 0
+
+                        // Set the values in the EditText fields
+                        mainEditText.setText(categoryName)
+                        categoryDesc.setText(categoryDescription)
+                        maxSpendingLimit.setText(spendingLimit.toString())
+                    }
+                }
+            }.addOnFailureListener { exception ->
+                Log.e("UserSpendingInfo", "Error getting data", exception)
+            }
+
+            // Horizontal layout for the category description and spending limit
+            val horizontalLayout = LinearLayout(this).apply {
+                orientation = LinearLayout.HORIZONTAL
+                layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                )
+            }
+
+            // Button layout
+            val buttonLayout = LinearLayout(this).apply {
+                orientation = LinearLayout.HORIZONTAL
+                layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                ).apply {
+                    setMargins(0, 16, 0, 0)
+                }
+            }
+
+            // Buttons to delete and set the category
+            val deleteButton = Button(this).apply {
+                text = "Remove"
+                layoutParams = LinearLayout.LayoutParams(
+                    0,
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    1f
+                )
+                setOnClickListener {
+                    // Clear the values and reset database entries
+                    mainEditText.text.clear()
+                    categoryDesc.text.clear()
+                    maxSpendingLimit.text.clear()
+
+                    // Reset the values in the database
+                    val categoryNumber = categoryToNumberMap[i]
+                    firebaseReference.child(userName).child(categoryNumber.toString()).child("isCategoryActive").setValue("No")
+                    firebaseReference.child(userName).child(categoryNumber.toString()).child("categoryName").setValue("")
+                    firebaseReference.child(userName).child(categoryNumber.toString()).child("categoryDescription").setValue("")
+                    firebaseReference.child(userName).child(categoryNumber.toString()).child("maxSpendingLimit").setValue(0)
+
+                    // Decrement the counter and update the number of categories
+                    counter--
+                    firebaseReference.child(userName).child("numberOfSpendingCategories").setValue(counter)
+                }
+            }
+
+            val setButton = Button(this).apply {
+                // Set the button text and layout
+                text = "Set"
+                layoutParams = LinearLayout.LayoutParams(
+                    0,
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    1f
+                )
+
+                // Set the values in the database
+                setOnClickListener {
+                    val categoryName = mainEditText.text.toString()
+                    val categoryDescription = categoryDesc.text.toString()
+                    val spendingLimit = maxSpendingLimit.text.toString().toIntOrNull() ?: 0
+
+                    val categoryNumber = categoryToNumberMap[i]
+                    //update the database with the new values
+                    firebaseReference.child(userName).child(categoryNumber.toString()).child("isCategoryActive").setValue("Yes")
+                    firebaseReference.child(userName).child(categoryNumber.toString()).child("categoryName").setValue(categoryName)
+                    firebaseReference.child(userName).child(categoryNumber.toString()).child("categoryDescription").setValue(categoryDescription)
+                    firebaseReference.child(userName).child(categoryNumber.toString()).child("maxSpendingLimit").setValue(spendingLimit)
+
+                    //now add to the counter and update the number of categories
+                    counter++
+                    firebaseReference.child(userName).child("numberOfSpendingCategories").setValue(counter)
+                }
+            }
+
+            // Add the buttons to the button layout
+            buttonLayout.addView(deleteButton)
+            buttonLayout.addView(setButton)
+            horizontalLayout.addView(categoryDesc)
+            horizontalLayout.addView(maxSpendingLimit)
+            verticalLayout.addView(mainEditText)
+            verticalLayout.addView(horizontalLayout)
+            verticalLayout.addView(buttonLayout)
+            boxContainer.addView(verticalLayout)
+        }
+
+        //make the done button to go to the budget page
+        val doneButton = findViewById<Button>(R.id.doneButton)
+        doneButton.setOnClickListener {
             val intent = Intent(this, BudgetPage::class.java)
             startActivity(intent)
         }
-
-        doneButton.setOnClickListener {
-            if (categoryCount > 0) { // Check if at least one spinner is added
-                val intent = Intent(this, BudgetPage::class.java)
-                startActivity(intent)
-            } else {
-                Toast.makeText(
-                    this,
-                    "Please add at least one category before proceeding.",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-        }
-
-        // Nav view configurations
-        // Initialize DrawerLayout and NavigationView
-        drawerLayout = findViewById(R.id.drawer_layout)
-        navView = findViewById(R.id.nav_view)
-
-        // Add toggle to open and close drawer
-        val toggle = ActionBarDrawerToggle(
-            this,
-            drawerLayout,
-            R.string.navigation_drawer_open,
-            R.string.navigation_drawer_close
-        )
-        drawerLayout.addDrawerListener(toggle)
-        toggle.syncState()
-
-        // Handle navigation menu item clicks
-        navView.setNavigationItemSelectedListener { menuItem ->
-            when (menuItem.itemId) {
-                R.id.budgeting_page_button -> {
-                    // Handle the budgeting page click
-                    Toast.makeText(this, "Budgeting Page Clicked", Toast.LENGTH_SHORT).show()
-                    val intent = Intent(this, BudgetPage::class.java)
-                    startActivity(intent)
-                }
-
-                R.id.user_info_button -> {
-                    // Handle the user info page click
-                    Toast.makeText(this, "User Info Clicked", Toast.LENGTH_SHORT).show()
-                    val intent = Intent(this, UserInfoPage::class.java)
-                    startActivity(intent)
-                }
-
-                R.id.service_link_button -> {
-                    // Handle linked accounts page click
-                    Toast.makeText(this, "Already on Add Categories", Toast.LENGTH_SHORT)
-                        .show()
-                }
-
-                R.id.notifications_page_button -> {
-                    // Handle linked accounts page click
-                    Toast.makeText(this, "Notifications Clicked", Toast.LENGTH_SHORT).show()
-                    val intent = Intent(this, NotificationsPage::class.java)
-                    startActivity(intent)
-                }
-
-                R.id.logout_button -> {
-                    // Handle logout
-                    Toast.makeText(this, "Log Out Clicked", Toast.LENGTH_SHORT).show()
-                    val intent = Intent(this, MainActivity::class.java)
-                    startActivity(intent)
-                }
-            }
-            drawerLayout.closeDrawers()
-            true
-        }
-
-        // Enable toggle button in the action bar
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        toggle.syncState()
     }
-
-        override fun onOptionsItemSelected(item: MenuItem): Boolean {
-            // Handle action bar item clicks to open/close the drawer
-            return if (item.itemId == android.R.id.home) {
-                drawerLayout.openDrawer(navView)
-                true
-            } else super.onOptionsItemSelected(item)
-        }
-
-    }
-
+}

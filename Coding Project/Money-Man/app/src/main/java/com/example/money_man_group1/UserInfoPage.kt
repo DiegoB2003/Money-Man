@@ -64,8 +64,6 @@ class UserInfoPage : AppCompatActivity() {
         // Retrieve user data from MainActivity
         val userData = MainActivity.userData
 
-        //save the original username
-        val originalUsername = userData?.username
 
         if (userData != null) {
             binding.textView7.text = userData.firstName
