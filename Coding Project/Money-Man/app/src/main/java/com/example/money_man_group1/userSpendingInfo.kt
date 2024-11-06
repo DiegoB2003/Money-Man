@@ -15,7 +15,7 @@ data class UserSpendingInfo(
         var isCategoryActive: String = "No",
         var categoryName: String = "",
         var categoryDescription: String = "",
-        var maxSpendingLimit: Int = 0,
-        var currentMoneySpent: Int = 0
+        var maxSpendingLimit: Double = 0.0,
+        var currentMoneySpent: Double = 0.0
     )
 }

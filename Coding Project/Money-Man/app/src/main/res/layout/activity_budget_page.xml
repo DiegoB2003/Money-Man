@@ -25,19 +25,26 @@
 
             <Button
                 android:id="@+id/addCatrgoryButton"
-                android:layout_width="148dp"
+                android:layout_width="147dp"
                 android:layout_height="50dp"
                 android:layout_marginTop="10dp"
-                android:layout_marginHorizontal="10dp"
                 android:text="Add Categories" />
 
             <Button
                 android:id="@+id/activiyLogButton"
-                android:layout_width="148dp"
+                android:layout_width="124dp"
                 android:layout_height="50dp"
                 android:layout_marginTop="10dp"
-                android:layout_marginHorizontal="260dp"
+                android:layout_marginHorizontal="287dp"
                 android:text="Closer Look" />
+
+            <Button
+                android:id="@+id/addSpendingButton"
+                android:layout_width="138dp"
+                android:layout_height="50dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginHorizontal="148dp"
+                android:text="Add Spending" />
         </com.anychart.AnyChartView>
 
 

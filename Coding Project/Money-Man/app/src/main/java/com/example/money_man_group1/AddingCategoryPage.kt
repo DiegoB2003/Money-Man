@@ -169,7 +169,7 @@ class AddingCategoryPage : AppCompatActivity() {
                     firebaseReference.child(userName).child(categoryNumber.toString()).child("categoryActive").setValue("No")
                     firebaseReference.child(userName).child(categoryNumber.toString()).child("categoryName").setValue("")
                     firebaseReference.child(userName).child(categoryNumber.toString()).child("categoryDescription").setValue("")
-                    firebaseReference.child(userName).child(categoryNumber.toString()).child("maxSpendingLimit").setValue(0)
+                    firebaseReference.child(userName).child(categoryNumber.toString()).child("maxSpendingLimit").setValue(0.0)
 
                     // Decrement the counter and update the number of categories
                     counter--
@@ -191,7 +191,7 @@ class AddingCategoryPage : AppCompatActivity() {
                 setOnClickListener {
                     val categoryName = mainEditText.text.toString()
                     val categoryDescription = categoryDesc.text.toString()
-                    val spendingLimit = maxSpendingLimit.text.toString().toIntOrNull() ?: 0
+                    val spendingLimit = maxSpendingLimit.text.toString().toDoubleOrNull() ?: 0.0
 
                     val categoryNumber = categoryToNumberMap[i]
                     //update the database with the new values

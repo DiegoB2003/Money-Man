@@ -18,6 +18,8 @@ import com.anychart.chart.common.dataentry.DataEntry
 import com.anychart.chart.common.dataentry.ValueDataEntry
 import com.anychart.charts.Pie
 import com.google.android.material.navigation.NavigationView
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 
 class BudgetPage : AppCompatActivity() {
     // Navigation vars
@@ -28,6 +30,10 @@ class BudgetPage : AppCompatActivity() {
     private val pieChartData: ArrayList<DataEntry> = ArrayList() //ArrayList to hold data for pie chart
     private lateinit var pieChart: Pie //Declare pie chart var
     private lateinit var anyChartView: AnyChartView //Declare chart view var
+
+    //Database and user information
+    private lateinit var firebaseReference: DatabaseReference //reference to firebase database
+    val userName: String = MainActivity.userData?.username ?: "Unknown User"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,12 +49,41 @@ class BudgetPage : AppCompatActivity() {
         pieChart = AnyChart.pie() //creates pie chart from library
         anyChartView.setChart(pieChart)
 
-        addToChart("Food", 100.0) //Pie chart default values for now
-        addToChart("Education", 320.0)
-        addToChart("Hobbies", 17.2)
-        addToChart("Health", 1000.83)
-        addToChart("Housing", 35.0)
-        addToChart("Other", 55.0)
+        firebaseReference = FirebaseDatabase.getInstance().getReference("userSpendingInfo") //gets instance of database
+
+        //Adds data to pie chart from firebase
+        firebaseReference.child(userName).get().addOnSuccessListener { dataSnapshot ->
+            val userSpendingInfo = dataSnapshot.getValue(UserSpendingInfo::class.java)
+
+            if (userSpendingInfo != null) { //gets each category from the userSpendingInfo object
+                val categoryOne = userSpendingInfo.categoryOne
+                val categoryTwo = userSpendingInfo.categoryTwo
+                val categoryThree = userSpendingInfo.categoryThree
+                val categoryFour = userSpendingInfo.categoryFour
+                val categoryFive = userSpendingInfo.categoryFive
+                val categorySix = userSpendingInfo.categorySix
+
+                //Checks if each category is active and if it is add to pie chart
+                if (categoryOne.isCategoryActive == "Yes") {
+                    addToChart(categoryOne.categoryName, categoryOne.currentMoneySpent)
+                }
+                if (categoryTwo.isCategoryActive == "Yes") {
+                    addToChart(categoryTwo.categoryName, categoryTwo.currentMoneySpent)
+                }
+                if (categoryThree.isCategoryActive == "Yes") {
+                    addToChart(categoryThree.categoryName, categoryThree.currentMoneySpent)
+                }
+                if (categoryFour.isCategoryActive == "Yes") {
+                    addToChart(categoryFour.categoryName, categoryFour.currentMoneySpent)
+                }
+                if (categoryFive.isCategoryActive == "Yes") {
+                    addToChart(categoryFive.categoryName, categoryFive.currentMoneySpent)
+                }
+                if (categorySix.isCategoryActive == "Yes") {
+                    addToChart(categorySix.categoryName, categorySix.currentMoneySpent)
+                }
+            }
+        }
 
 
         // Nav view configurations
@@ -71,9 +106,14 @@ class BudgetPage : AppCompatActivity() {
         }
 
         val addCategory: Button = findViewById(R.id.addCatrgoryButton)
-
         addCategory.setOnClickListener {
             val intent = Intent(this, AddingCategoryPage::class.java)
+            startActivity(intent)
+        }
+
+        val addSpending = findViewById<Button>(R.id.addSpendingButton) //setup the add spending button
+        addSpending.setOnClickListener {
+            val intent = Intent(this, SpendingPage::class.java)
             startActivity(intent)
         }
 
@@ -121,7 +161,6 @@ class BudgetPage : AppCompatActivity() {
         openDrawerButton.setOnClickListener {
             drawerLayout.openDrawer(GravityCompat.START) // Open the drawer
         }
-
 
         // Enable toggle button in the action bar
         supportActionBar?.setDisplayHomeAsUpEnabled(true)

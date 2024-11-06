@@ -13,6 +13,9 @@
         android:theme="@style/Theme.MoneyMan_Group1"
         tools:targetApi="31">
         <activity
+            android:name=".SpendingPage"
+            android:exported="false" />
+        <activity
             android:name=".ActivityLog"
             android:exported="false" />
         <activity
