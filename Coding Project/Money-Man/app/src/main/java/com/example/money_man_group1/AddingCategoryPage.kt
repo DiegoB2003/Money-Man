@@ -73,6 +73,8 @@ class AddingCategoryPage : AppCompatActivity() {
 
 // Loop to create six category sections
         for (i in 1..6) {
+
+
             val verticalLayout = LinearLayout(this).apply {
                 orientation = LinearLayout.VERTICAL
                 layoutParams = LinearLayout.LayoutParams(
@@ -111,22 +113,30 @@ class AddingCategoryPage : AppCompatActivity() {
             }
 
             // Check if the category is active and retrieve data
-            firebaseReference.child(userName).child(categoryToNumberMap[i].toString()).get().addOnSuccessListener { dataSnapshot ->
-                if (dataSnapshot.exists()) {
-                    val categoryActive = dataSnapshot.child("categoryActive").getValue(String::class.java) ?: "No"
-                    if (categoryActive == "Yes") {
-                        // Set actual values if category is active
-                        val categoryName = dataSnapshot.child("categoryName").getValue(String::class.java) ?: ""
-                        val categoryDescription = dataSnapshot.child("categoryDescription").getValue(String::class.java) ?: ""
-                        val spendingLimit = dataSnapshot.child("maxSpendingLimit").getValue(Int::class.java) ?: 0
+            firebaseReference.child(userName).child(categoryToNumberMap[i].toString()).get()
+                .addOnSuccessListener { dataSnapshot ->
+                    if (dataSnapshot.exists()) {
+                        val categoryActive =
+                            dataSnapshot.child("categoryActive").getValue(String::class.java)
+                                ?: "No"
+                        if (categoryActive == "Yes") {
+                            // Set actual values if category is active
+                            val categoryName =
+                                dataSnapshot.child("categoryName").getValue(String::class.java)
+                                    ?: ""
+                            val categoryDescription = dataSnapshot.child("categoryDescription")
+                                .getValue(String::class.java) ?: ""
+                            val spendingLimit =
+                                dataSnapshot.child("maxSpendingLimit").getValue(Int::class.java)
+                                    ?: 0
 
-                        // Set the values in the EditText fields
-                        mainEditText.setText(categoryName)
-                        categoryDesc.setText(categoryDescription)
-                        maxSpendingLimit.setText(spendingLimit.toString())
+                            // Set the values in the EditText fields
+                            mainEditText.setText(categoryName)
+                            categoryDesc.setText(categoryDescription)
+                            maxSpendingLimit.setText(spendingLimit.toString())
+                        }
                     }
-                }
-            }.addOnFailureListener { exception ->
+                }.addOnFailureListener { exception ->
                 Log.e("UserSpendingInfo", "Error getting data", exception)
             }
 
@@ -166,20 +176,23 @@ class AddingCategoryPage : AppCompatActivity() {
 
                     // Reset the values in the database
                     val categoryNumber = categoryToNumberMap[i]
-                    firebaseReference.child(userName).child(categoryNumber.toString()).child("categoryActive").setValue("No")
-                    firebaseReference.child(userName).child(categoryNumber.toString()).child("categoryName").setValue("")
-                    firebaseReference.child(userName).child(categoryNumber.toString()).child("categoryDescription").setValue("")
-                    firebaseReference.child(userName).child(categoryNumber.toString()).child("maxSpendingLimit").setValue(0.0)
+                    firebaseReference.child(userName).child(categoryNumber.toString())
+                        .child("categoryActive").setValue("No")
+                    firebaseReference.child(userName).child(categoryNumber.toString())
+                        .child("categoryName").setValue("")
+                    firebaseReference.child(userName).child(categoryNumber.toString())
+                        .child("categoryDescription").setValue("")
+                    firebaseReference.child(userName).child(categoryNumber.toString())
+                        .child("maxSpendingLimit").setValue(0.0)
 
                     // Decrement the counter and update the number of categories
                     counter--
-                    firebaseReference.child(userName).child("numberOfSpendingCategories").setValue(counter)
+                    firebaseReference.child(userName).child("numberOfSpendingCategories")
+                        .setValue(counter)
                 }
             }
 
             val setButton = Button(this).apply {
-                // Set the button text and layout
-
                 text = "Set"
                 layoutParams = LinearLayout.LayoutParams(
                     0,
@@ -187,41 +200,49 @@ class AddingCategoryPage : AppCompatActivity() {
                     1f
                 )
 
-                // Set the values in the database
                 setOnClickListener {
                     val categoryName = mainEditText.text.toString()
                     val categoryDescription = categoryDesc.text.toString()
                     val spendingLimit = maxSpendingLimit.text.toString().toDoubleOrNull() ?: 0.0
 
                     val categoryNumber = categoryToNumberMap[i]
-                    //update the database with the new values
-                    firebaseReference.child(userName).child(categoryNumber.toString()).child("categoryActive").setValue("Yes")
-                    firebaseReference.child(userName).child(categoryNumber.toString()).child("categoryName").setValue(categoryName)
-                    firebaseReference.child(userName).child(categoryNumber.toString()).child("categoryDescription").setValue(categoryDescription)
-                    firebaseReference.child(userName).child(categoryNumber.toString()).child("maxSpendingLimit").setValue(spendingLimit)
 
-                    //now add to the counter and update the number of categories
-                    counter++
-                    firebaseReference.child(userName).child("numberOfSpendingCategories").setValue(counter)
+                    // Retrieve the current status of the category
+                    firebaseReference.child(userName).child(categoryNumber.toString()).get().addOnSuccessListener { dataSnapshot ->
+                        val categoryCurrentStatus = dataSnapshot.child("categoryActive").getValue(String::class.java)
+                        if (categoryCurrentStatus == "No") {
+                            counter++
+                        }
+
+                        // Update the database with the new values
+                        firebaseReference.child(userName).child(categoryNumber.toString()).child("categoryActive").setValue("Yes")
+                        firebaseReference.child(userName).child(categoryNumber.toString()).child("categoryName").setValue(categoryName)
+                        firebaseReference.child(userName).child(categoryNumber.toString()).child("categoryDescription").setValue(categoryDescription)
+                        firebaseReference.child(userName).child(categoryNumber.toString()).child("maxSpendingLimit").setValue(spendingLimit)
+
+                        firebaseReference.child(userName).child("numberOfSpendingCategories").setValue(counter)
+                    }.addOnFailureListener { exception ->
+                        Log.e("UserSpendingInfo", "Error getting data", exception)
+                    }
                 }
             }
+                // Add the buttons to the button layout
+                buttonLayout.addView(deleteButton)
+                buttonLayout.addView(setButton)
+                horizontalLayout.addView(categoryDesc)
+                horizontalLayout.addView(maxSpendingLimit)
+                verticalLayout.addView(mainEditText)
+                verticalLayout.addView(horizontalLayout)
+                verticalLayout.addView(buttonLayout)
+                boxContainer.addView(verticalLayout)
+            }
 
-            // Add the buttons to the button layout
-            buttonLayout.addView(deleteButton)
-            buttonLayout.addView(setButton)
-            horizontalLayout.addView(categoryDesc)
-            horizontalLayout.addView(maxSpendingLimit)
-            verticalLayout.addView(mainEditText)
-            verticalLayout.addView(horizontalLayout)
-            verticalLayout.addView(buttonLayout)
-            boxContainer.addView(verticalLayout)
-        }
-
-        //make the done button to go to the budget page
-        val doneButton = findViewById<Button>(R.id.doneButton)
-        doneButton.setOnClickListener {
-            val intent = Intent(this, BudgetPage::class.java)
-            startActivity(intent)
+            //make the done button to go to the budget page
+            val doneButton = findViewById<Button>(R.id.doneButton)
+            doneButton.setOnClickListener {
+                val intent = Intent(this, BudgetPage::class.java)
+                startActivity(intent)
+            }
         }
     }
-}
+
