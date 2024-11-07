@@ -1,0 +1,95 @@
+package com.example.money_man_group1
+
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.content.Context
+import android.os.Build
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
+import android.Manifest
+import android.app.Activity
+import android.content.SharedPreferences
+import android.content.pm.PackageManager
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+
+// Define a request code
+private const val NOTIFICATION_PERMISSION_REQUEST_CODE = 1001
+
+object NotificationUtils {
+    fun sendNotification(context: Context, message: String) {
+        val channelId = "alerts_channel"
+        val notificationId = System.currentTimeMillis().toInt()
+
+        // Create notification channel (necessary for API 26+)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val name = "Alerts"
+            val descriptionText = "Channel for user alerts and notifications"
+            val importance = NotificationManager.IMPORTANCE_DEFAULT
+            val channel = NotificationChannel(channelId, name, importance).apply {
+                description = descriptionText
+            }
+            val notificationManager: NotificationManager =
+                context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(channel)
+        }
+
+        // Create and send the notification
+        val builder = NotificationCompat.Builder(context, channelId)
+            .setSmallIcon(R.drawable.baseline_notifications_24)
+            .setContentTitle("New Alert")
+            .setContentText(message)
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+
+        with(NotificationManagerCompat.from(context)) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                // Check if the permission is already granted
+                if (ContextCompat.checkSelfPermission(
+                        context, Manifest.permission.POST_NOTIFICATIONS
+                    ) != PackageManager.PERMISSION_GRANTED
+                ) {
+                    // Request the permission
+                    ActivityCompat.requestPermissions(
+                        (context as Activity),
+                        arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                        NOTIFICATION_PERMISSION_REQUEST_CODE
+                    )
+                } else {
+                    // Permission already granted, send the notification
+                    notify(notificationId, builder.build())
+                }
+            } else {
+                // Permission not required below Android 13, send the notification
+                notify(notificationId, builder.build())
+            }
+        }
+
+        // Save the notification text to storage for NotificationsPage
+        saveNotificationToLocalStorage(context, message)
+    }
+
+    // Save notification to SharedPreferences
+    private fun saveNotificationToLocalStorage(context: Context, notificationText: String) {
+        val prefs: SharedPreferences = context.getSharedPreferences("notifications_prefs", Context.MODE_PRIVATE)
+        val editor = prefs.edit()
+
+        // Retrieve current notifications, add the new one
+        val notifications = getNotificationsFromLocalStorage(context).toMutableList()
+        notifications.add(notificationText)
+
+        // Convert list to JSON and save it
+        val json = Gson().toJson(notifications)
+        editor.putString("notifications_list", json)
+        editor.apply()
+    }
+
+    // Retrieve notifications from SharedPreferences
+    fun getNotificationsFromLocalStorage(context: Context): List<String> {
+        val prefs: SharedPreferences = context.getSharedPreferences("notifications_prefs", Context.MODE_PRIVATE)
+        val json = prefs.getString("notifications_list", null)
+        val type = object : TypeToken<List<String>>() {}.type
+        return Gson().fromJson(json, type) ?: emptyList()
+    }
+}

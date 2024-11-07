@@ -41,12 +41,8 @@ class NotificationsPage : AppCompatActivity() {
         recyclerView = findViewById(R.id.notificationsRecyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
 
-        // Sample data (replace with actual notifications later)
-        val notifications = listOf(
-            "Alert: Your budget is over the limit!",
-            "Notification: New category added",
-            "Alert: You're so damn broke!"
-        )
+        // Load notifications from SharedPreferences
+        val notifications = NotificationUtils.getNotificationsFromLocalStorage(this)
 
         // Set up recycler view adapter
         adapter = NotificationsAdapter(notifications)

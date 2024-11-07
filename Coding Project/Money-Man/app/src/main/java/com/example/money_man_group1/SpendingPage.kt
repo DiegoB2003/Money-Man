@@ -1,6 +1,7 @@
 package com.example.money_man_group1
 
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
@@ -11,8 +12,15 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.example.money_man_group1.NotificationUtils
 
 class SpendingPage : AppCompatActivity() {
+    // Define a request code and pending message
+    private var pendingNotificationMessage: String? = null
+    companion object {
+        private const val NOTIFICATION_PERMISSION_REQUEST_CODE = 1001
+    }
+
     private lateinit var firebaseReference: DatabaseReference //reference to firebase database
     val userName: String = MainActivity.userData?.username ?: "Unknown User"
 
@@ -41,6 +49,7 @@ class SpendingPage : AppCompatActivity() {
         val saveButton = findViewById<Button>(R.id.saveButton)
         firebaseReference = FirebaseDatabase.getInstance().getReference("userSpendingInfo") //gets instance of database
         saveButton.setOnClickListener {
+            saveButton.isClickable = false
             val categoryNameT = categoryNameText.text.toString().trim() //gets users wanted category
             val amountSpentT = amountSpentText.text.toString().toDouble() //gets users amount spent
             var categoryFound = false //flag to check if category is found
@@ -64,6 +73,25 @@ class SpendingPage : AppCompatActivity() {
                                 Toast.makeText(this, "Data Saved!", Toast.LENGTH_SHORT).show()
                                 categoryNameText.text.clear() //Clears boxes for another user entry
                                 amountSpentText.text.clear()
+
+                                // Sends push notification when over the maxSpendingLimit of the category
+                                categoryRef.child("maxSpendingLimit").get().addOnSuccessListener { dataSnap ->
+                                    val maxSpendingLimit = (dataSnap.value as? Number)?.toDouble() ?: 0.0
+                                    var message: String? = null
+                                    if (updatedAmount > maxSpendingLimit) {
+                                        message = "You are $${updatedAmount - maxSpendingLimit} over the spending limit of ${categoryNameT}!"
+                                    } else if (updatedAmount == maxSpendingLimit){
+                                        message = "You have reached the spending limit of ${categoryNameT}!"
+                                    }
+
+                                    if (message != null) {
+                                        pendingNotificationMessage = message
+                                        message.let {
+                                            NotificationUtils.sendNotification(this, it)
+                                        }
+                                        pendingNotificationMessage = null
+                                    }
+                                }
                             }
                         }
                         return@addOnSuccessListener
@@ -74,12 +102,32 @@ class SpendingPage : AppCompatActivity() {
                     }
                 }
             }
+            saveButton.isClickable = true
         }
 
         val backButton = findViewById<Button>(R.id.backbutton)
         backButton.setOnClickListener {
             val intent = Intent(this, BudgetPage::class.java)
             startActivity(intent)
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == NOTIFICATION_PERMISSION_REQUEST_CODE) {
+            if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+                // Permission granted, send the notification
+                pendingNotificationMessage?.let {
+                    NotificationUtils.sendNotification(this, it)
+                }
+            } else {
+                // Permission denied
+                Toast.makeText(this, "Notification permission denied", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 }
