@@ -14,10 +14,10 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 
 class createAccount : AppCompatActivity() {
-    
+
     lateinit var binding : ActivityCreateAccountBinding //Binding for the activity to xml file
     private lateinit var firebaseReference: DatabaseReference //reference to firebase database
-    
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -73,7 +73,15 @@ class createAccount : AppCompatActivity() {
                         //now we simply create a row for the user on the userSpendingInfo table
                         firebaseReference = FirebaseDatabase.getInstance().getReference("userSpendingInfo")
                         firebaseReference.child(username).setValue(userInfo)
-                        
+
+                        //create a row for the user on the userActivityLog table
+                        firebaseReference = FirebaseDatabase.getInstance().getReference("userActivityLog")
+                        firebaseReference.child(username).setValue("")
+
+                        //create a row for the user on the userNotification table
+                        firebaseReference = FirebaseDatabase.getInstance().getReference("userNotification")
+                        firebaseReference.child(username).setValue("")
+
                     }
                 // Go to service linking page
                 val intent = Intent(this, MainActivity::class.java)

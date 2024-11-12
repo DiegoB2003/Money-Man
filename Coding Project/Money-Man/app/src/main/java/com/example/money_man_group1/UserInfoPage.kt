@@ -221,6 +221,8 @@ class UserInfoPage : AppCompatActivity() {
             firebaseReference.child(oldUsername).removeValue() //Delete the old user from table
 
             renameFirebaseKey("userSpendingInfo", oldUsername,username) //now we rename the key in our userSpendingInfo table
+            renameFirebaseKey("userActivityLog", oldUsername,username) //now we rename the key in our userActivityLog table
+            renameFirebaseKey("userNotification", oldUsername,username) //now we rename the key in our userNotification table
         }
 
         //Insert the updated user data into Firebase
