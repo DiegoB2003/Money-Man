@@ -11,7 +11,7 @@
         android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="50dp"
         android:text="MONEY-MAN"
         android:textAlignment="center"
         android:textSize="34sp"
@@ -29,6 +29,7 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="162dp"
         android:text="Login"
+        android:backgroundTint="#009344"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -42,6 +43,7 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="162dp"
         android:text="Create Account"
+        android:backgroundTint="#103155"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/loginScreenButton" />
@@ -51,12 +53,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="100dp"
-        android:layout_marginTop="150dp"
+        android:layout_marginTop="212dp"
         android:layout_marginEnd="101dp"
         android:ems="10"
         android:hint="Username"
         android:inputType="textEmailAddress"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/title" />
 
@@ -73,5 +76,15 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editTextUsername" />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="160dp"
+        android:layout_height="160dp"
+        app:layout_constraintBottom_toTopOf="@+id/editTextUsername"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/title"
+        app:srcCompat="@drawable/img" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
