@@ -51,40 +51,7 @@ class BudgetPage : AppCompatActivity() {
 
         firebaseReference = FirebaseDatabase.getInstance().getReference("userSpendingInfo") //gets instance of database
 
-        //Adds data to pie chart from firebase
-        firebaseReference.child(userName).get().addOnSuccessListener { dataSnapshot ->
-            val userSpendingInfo = dataSnapshot.getValue(UserSpendingInfo::class.java)
-
-            if (userSpendingInfo != null) { //gets each category from the userSpendingInfo object
-                val categoryOne = userSpendingInfo.categoryOne
-                val categoryTwo = userSpendingInfo.categoryTwo
-                val categoryThree = userSpendingInfo.categoryThree
-                val categoryFour = userSpendingInfo.categoryFour
-                val categoryFive = userSpendingInfo.categoryFive
-                val categorySix = userSpendingInfo.categorySix
-
-                //Checks if each category is active and if it is add to pie chart
-                if (categoryOne.isCategoryActive == "Yes") {
-                    addToChart(categoryOne.categoryName, categoryOne.currentMoneySpent)
-                }
-                if (categoryTwo.isCategoryActive == "Yes") {
-                    addToChart(categoryTwo.categoryName, categoryTwo.currentMoneySpent)
-                }
-                if (categoryThree.isCategoryActive == "Yes") {
-                    addToChart(categoryThree.categoryName, categoryThree.currentMoneySpent)
-                }
-                if (categoryFour.isCategoryActive == "Yes") {
-                    addToChart(categoryFour.categoryName, categoryFour.currentMoneySpent)
-                }
-                if (categoryFive.isCategoryActive == "Yes") {
-                    addToChart(categoryFive.categoryName, categoryFive.currentMoneySpent)
-                }
-                if (categorySix.isCategoryActive == "Yes") {
-                    addToChart(categorySix.categoryName, categorySix.currentMoneySpent)
-                }
-            }
-        }
-
+        getPieChartData() //gets data from database and adds it to the pie chart
 
         // Nav view configurations
         // Initialize DrawerLayout and NavigationView
@@ -114,6 +81,12 @@ class BudgetPage : AppCompatActivity() {
         val addSpending = findViewById<Button>(R.id.addSpendingButton) //setup the add spending button
         addSpending.setOnClickListener {
             val intent = Intent(this, SpendingPage::class.java)
+            startActivity(intent)
+        }
+
+        val reloadPage = findViewById<Button>(R.id.reloaddataButton) //setup the reload page button
+        reloadPage.setOnClickListener {
+            val intent = Intent(this, BudgetPage::class.java)
             startActivity(intent)
         }
 
@@ -165,6 +138,44 @@ class BudgetPage : AppCompatActivity() {
         // Enable toggle button in the action bar
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         toggle.syncState()
+    }
+
+    //Gets values from database and adds them to the pie chart
+    private fun getPieChartData() {
+        //Adds data to pie chart from firebase
+        firebaseReference.child(userName).get().addOnSuccessListener { dataSnapshot ->
+            val userSpendingInfo = dataSnapshot.getValue(UserSpendingInfo::class.java)
+
+            if (userSpendingInfo != null) { //gets each category from the userSpendingInfo object
+                val categoryOne = userSpendingInfo.categoryOne
+                val categoryTwo = userSpendingInfo.categoryTwo
+                val categoryThree = userSpendingInfo.categoryThree
+                val categoryFour = userSpendingInfo.categoryFour
+                val categoryFive = userSpendingInfo.categoryFive
+                val categorySix = userSpendingInfo.categorySix
+
+                //Checks if each category is active and if it is add to pie chart
+                if (categoryOne.isCategoryActive == "Yes") {
+                    addToChart(categoryOne.categoryName, categoryOne.currentMoneySpent)
+                }
+                if (categoryTwo.isCategoryActive == "Yes") {
+                    addToChart(categoryTwo.categoryName, categoryTwo.currentMoneySpent)
+                }
+                if (categoryThree.isCategoryActive == "Yes") {
+                    addToChart(categoryThree.categoryName, categoryThree.currentMoneySpent)
+                }
+                if (categoryFour.isCategoryActive == "Yes") {
+                    addToChart(categoryFour.categoryName, categoryFour.currentMoneySpent)
+                }
+                if (categoryFive.isCategoryActive == "Yes") {
+                    addToChart(categoryFive.categoryName, categoryFive.currentMoneySpent)
+                }
+                if (categorySix.isCategoryActive == "Yes") {
+                    addToChart(categorySix.categoryName, categorySix.currentMoneySpent)
+                }
+            }
+        }
+        anyChartView.refreshDrawableState()
     }
 
     //function adds name and cost of what user spend into the
