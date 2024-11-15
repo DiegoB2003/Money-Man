@@ -93,6 +93,7 @@
             android:layout_marginStart="320dp"
             android:layout_marginTop="604dp"
             android:text="Edit"
+            android:backgroundTint="#103155"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -102,6 +103,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="52dp"
             android:text="Done"
+            android:backgroundTint="#009344"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.049"
             app:layout_constraintStart_toStartOf="parent"
