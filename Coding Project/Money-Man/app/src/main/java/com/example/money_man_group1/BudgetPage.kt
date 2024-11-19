@@ -35,8 +35,6 @@ class BudgetPage : AppCompatActivity() {
     private lateinit var firebaseReference: DatabaseReference //reference to firebase database
     val userName: String = MainActivity.userData?.username ?: "Unknown User"
 
-    private var isDarkModeEnabled = false // Variable to store dark mode state
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()

@@ -102,6 +102,7 @@ class MainActivity : AppCompatActivity() {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO) // Light Mode
         }
     }
+
     // This function updates the button text based on dark mode state
     private fun updateDarkModeButtonText(darkModeButton: Button) {
         if (isDarkModeEnabled) {
