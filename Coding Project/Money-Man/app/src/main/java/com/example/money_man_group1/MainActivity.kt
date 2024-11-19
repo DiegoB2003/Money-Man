@@ -13,10 +13,13 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import androidx.appcompat.app.AppCompatDelegate
 class MainActivity : AppCompatActivity() {
-    companion object { var userData: UserData? = null } //Companion object to hold user data and make it available to other activities
+    companion object {
+        var userData: UserData? = null
+        var isDarkModeEnabled = false // Dark mode state
+    } //Companion object to hold user data and make it available to other activities
+
     lateinit var binding : ActivityMainBinding //Binding for the activity to xml file
     private lateinit var firebaseReference: DatabaseReference //reference to firebase database
-    private var isDarkModeEnabled = false // Variable to store dark mode state
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

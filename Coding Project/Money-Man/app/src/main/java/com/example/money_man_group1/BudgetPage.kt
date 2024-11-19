@@ -35,6 +35,8 @@ class BudgetPage : AppCompatActivity() {
     private lateinit var firebaseReference: DatabaseReference //reference to firebase database
     val userName: String = MainActivity.userData?.username ?: "Unknown User"
 
+    private var isDarkModeEnabled = false // Variable to store dark mode state
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -48,6 +50,10 @@ class BudgetPage : AppCompatActivity() {
         anyChartView = findViewById(R.id.any_chart_view) //gets pie chart object from xml page using its id
         pieChart = AnyChart.pie() //creates pie chart from library
         anyChartView.setChart(pieChart)
+
+        if (MainActivity.isDarkModeEnabled) { //make pie chart background dark if in darkmode
+            pieChart.background().fill("#000000")
+        }
 
         firebaseReference = FirebaseDatabase.getInstance().getReference("userSpendingInfo") //gets instance of database
 
@@ -147,31 +153,20 @@ class BudgetPage : AppCompatActivity() {
             val userSpendingInfo = dataSnapshot.getValue(UserSpendingInfo::class.java)
 
             if (userSpendingInfo != null) { //gets each category from the userSpendingInfo object
-                val categoryOne = userSpendingInfo.categoryOne
-                val categoryTwo = userSpendingInfo.categoryTwo
-                val categoryThree = userSpendingInfo.categoryThree
-                val categoryFour = userSpendingInfo.categoryFour
-                val categoryFive = userSpendingInfo.categoryFive
-                val categorySix = userSpendingInfo.categorySix
+                val categories = listOf(
+                    userSpendingInfo.categoryOne,
+                    userSpendingInfo.categoryTwo,
+                    userSpendingInfo.categoryThree,
+                    userSpendingInfo.categoryFour,
+                    userSpendingInfo.categoryFive,
+                    userSpendingInfo.categorySix
+                )
 
                 //Checks if each category is active and if it is add to pie chart
-                if (categoryOne.isCategoryActive == "Yes") {
-                    addToChart(categoryOne.categoryName, categoryOne.currentMoneySpent)
-                }
-                if (categoryTwo.isCategoryActive == "Yes") {
-                    addToChart(categoryTwo.categoryName, categoryTwo.currentMoneySpent)
-                }
-                if (categoryThree.isCategoryActive == "Yes") {
-                    addToChart(categoryThree.categoryName, categoryThree.currentMoneySpent)
-                }
-                if (categoryFour.isCategoryActive == "Yes") {
-                    addToChart(categoryFour.categoryName, categoryFour.currentMoneySpent)
-                }
-                if (categoryFive.isCategoryActive == "Yes") {
-                    addToChart(categoryFive.categoryName, categoryFive.currentMoneySpent)
-                }
-                if (categorySix.isCategoryActive == "Yes") {
-                    addToChart(categorySix.categoryName, categorySix.currentMoneySpent)
+                for (category in categories) {
+                    if (category.isCategoryActive == "Yes") {
+                        addToChart(category.categoryName, category.currentMoneySpent)
+                    }
                 }
             }
         }
