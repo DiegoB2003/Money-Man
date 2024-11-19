@@ -29,6 +29,7 @@
                 android:layout_height="50dp"
                 android:layout_marginTop="10dp"
                 android:backgroundTint="#103155"
+                android:textColor="@color/button_text_color"
                 android:text="Add Categories" />
 
             <Button
@@ -38,6 +39,7 @@
                 android:layout_marginTop="10dp"
                 android:layout_marginHorizontal="287dp"
                 android:backgroundTint="#103155"
+                android:textColor="@color/button_text_color"
                 android:text="Closer Look" />
 
             <Button
@@ -47,6 +49,7 @@
                 android:layout_marginTop="10dp"
                 android:layout_marginHorizontal="148dp"
                 android:backgroundTint="#103155"
+                android:textColor="@color/button_text_color"
                 android:text="Add Spending" />
         </com.anychart.AnyChartView>
 
@@ -84,6 +87,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:text="Reload\nPie Chart"
+            android:textColor="@color/button_text_color"
             android:backgroundTint="#009344"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.611"

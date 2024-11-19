@@ -1,5 +1,4 @@
 package com.example.money_man_group1
-
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
@@ -12,11 +11,12 @@ import androidx.core.view.WindowInsetsCompat
 import com.example.money_man_group1.databinding.ActivityMainBinding
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
-
+import androidx.appcompat.app.AppCompatDelegate
 class MainActivity : AppCompatActivity() {
     companion object { var userData: UserData? = null } //Companion object to hold user data and make it available to other activities
     lateinit var binding : ActivityMainBinding //Binding for the activity to xml file
     private lateinit var firebaseReference: DatabaseReference //reference to firebase database
+    private var isDarkModeEnabled = false // Variable to store dark mode state
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,8 +28,24 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
-        binding = ActivityMainBinding.inflate(layoutInflater) //Initialize the binding
-        setContentView(binding.root) //Set the content view to the root view of the binding
+        // Inflate the layout and set the content view
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        // Initialize the dark mode button
+        val darkModeButton = findViewById<Button>(R.id.Darkbutton)
+
+        // Check if dark mode is enabled (either from memory or system default)
+        isDarkModeEnabled = AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES
+        updateDarkModeButtonText(darkModeButton) // Update the button text initially
+
+        // Observe dark mode button click event
+        darkModeButton.setOnClickListener {
+            // Toggle the dark mode setting based on the current state
+            isDarkModeEnabled = !isDarkModeEnabled
+            setDarkMode(isDarkModeEnabled)
+        }
+
 
         val loginButton = findViewById<Button>(R.id.loginScreenButton)
 
@@ -75,6 +91,20 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this, createAccount::class.java)
             startActivity(intent)
         }
-
+    }
+    private fun setDarkMode(isEnabled: Boolean) {
+        if (isEnabled) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES) // Dark Mode
+        } else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO) // Light Mode
+        }
+    }
+    // This function updates the button text based on dark mode state
+    private fun updateDarkModeButtonText(darkModeButton: Button) {
+        if (isDarkModeEnabled) {
+            darkModeButton.text = "Turn off Dark Mode"
+        } else {
+            darkModeButton.text = "Turn on Dark Mode"
+        }
     }
 }

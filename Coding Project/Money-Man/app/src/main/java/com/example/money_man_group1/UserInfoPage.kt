@@ -70,7 +70,7 @@ class UserInfoPage : AppCompatActivity() {
             binding.textView7.text = userData.firstName
             binding.textView12.text = userData.lastName
             binding.textView15.text = userData.phoneNumber
-            binding.textView16.text = userData.password
+          //  binding.textView16.text = userData.password
             binding.textView17.text = userData.dateOfBirth
             binding.textView13.text = userData.yearlyIncome.toString()
             binding.textView14.text = userData.username
