@@ -5,26 +5,41 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import java.util.Date
 
 
-class NotificationsAdapter(private val notifications: List<String>) :
-    RecyclerView.Adapter<NotificationsAdapter.NotificationViewHolder>() {
+class NotificationsAdapter(
+    private var notificationList: List<Notification>,
+    private val onNotificationClick: (Notification) -> Unit
+) : RecyclerView.Adapter<NotificationsAdapter.NotificationViewHolder>() {
+
+    inner class NotificationViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        private val messageTextView: TextView = itemView.findViewById(R.id.notification_message)
+        private val timestampTextView: TextView = itemView.findViewById(R.id.notification_timestamp)
+
+        fun bind(notification: Notification) {
+            messageTextView.text = notification.message
+            timestampTextView.text = Date(notification.timestamp).toString() // Format date if needed
+
+            // Set click listener
+            itemView.setOnClickListener { onNotificationClick(notification) }
+        }
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NotificationViewHolder {
         val view = LayoutInflater.from(parent.context)
-            .inflate(android.R.layout.simple_list_item_1, parent, false)
+            .inflate(R.layout.item_notification, parent, false)
         return NotificationViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: NotificationViewHolder, position: Int) {
-        holder.textView.text = notifications[position]
+        holder.bind(notificationList[position])
     }
 
-    override fun getItemCount(): Int {
-        return notifications.size
-    }
+    override fun getItemCount(): Int = notificationList.size
 
-    class NotificationViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val textView: TextView = view.findViewById(android.R.id.text1)
+    fun updateNotifications(newList: List<Notification>) {
+        notificationList = newList
+        notifyDataSetChanged() // Update the RecyclerView
     }
 }

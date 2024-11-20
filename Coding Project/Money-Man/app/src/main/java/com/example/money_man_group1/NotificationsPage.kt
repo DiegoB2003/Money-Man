@@ -2,6 +2,7 @@ package com.example.money_man_group1
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.MenuItem
 import android.widget.Button
 import android.widget.Toast
@@ -18,10 +19,14 @@ import com.google.android.material.navigation.NavigationView
 
 class NotificationsPage : AppCompatActivity() {
 
+    // User information
+    val userName: String = MainActivity.userData?.username ?: "Unknown User"
+
     // Notifications Recycler View vars
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: NotificationsAdapter
+    private val notifications = mutableListOf<Notification>()
 
     // Navigation vars
     private lateinit var drawerLayout: DrawerLayout
@@ -39,14 +44,22 @@ class NotificationsPage : AppCompatActivity() {
 
         // Initialize RecyclerView
         recyclerView = findViewById(R.id.notificationsRecyclerView)
+        // Set up RecyclerView
+        adapter = NotificationsAdapter(notifications) { notification ->
+            // Handle notification click
+            Toast.makeText(this, "Clicked: ${notification.timestamp}", Toast.LENGTH_SHORT).show()
+        }
+
         recyclerView.layoutManager = LinearLayoutManager(this)
-
-        // Load notifications from SharedPreferences
-        val notifications = NotificationUtils.getNotificationsFromLocalStorage(this)
-
-        // Set up recycler view adapter
-        adapter = NotificationsAdapter(notifications)
         recyclerView.adapter = adapter
+
+        // Fetch notifications
+        NotificationUtils.fetchNotificationsFromFirebase(userName) { fetchedNotifications ->
+            // Update the RecyclerView
+            notifications.clear()
+            notifications.addAll(fetchedNotifications)
+            adapter.updateNotifications(notifications)
+        }
 
         // Nav view configurations
         // Initialize DrawerLayout and NavigationView

@@ -10,8 +10,13 @@ import android.Manifest
 import android.app.Activity
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
+import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
@@ -19,6 +24,10 @@ import com.google.gson.reflect.TypeToken
 private const val NOTIFICATION_PERMISSION_REQUEST_CODE = 1001
 
 object NotificationUtils {
+
+    //Database and user information
+    val userName: String = MainActivity.userData?.username ?: "Unknown User"
+
     fun sendNotification(context: Context, message: String) {
         val channelId = "alerts_channel"
         val notificationId = System.currentTimeMillis().toInt()
@@ -67,29 +76,77 @@ object NotificationUtils {
         }
 
         // Save the notification text to storage for NotificationsPage
-        saveNotificationToLocalStorage(context, message)
+//        saveNotificationToLocalStorage(context, message)
+
+        // Save the notification to Firebase
+        val notification = Notification(
+            message = message
+        )
+        storeNotificationInFirebase(userName, notification)
     }
 
     // Save notification to SharedPreferences
-    private fun saveNotificationToLocalStorage(context: Context, notificationText: String) {
-        val prefs: SharedPreferences = context.getSharedPreferences("notifications_prefs", Context.MODE_PRIVATE)
-        val editor = prefs.edit()
+//    private fun saveNotificationToLocalStorage(context: Context, notificationText: String) {
+//        val prefs: SharedPreferences = context.getSharedPreferences("notifications_prefs", Context.MODE_PRIVATE)
+//        val editor = prefs.edit()
+//
+//        // Retrieve current notifications, add the new one
+//        val notifications = getNotificationsFromLocalStorage(context).toMutableList()
+//        notifications.add(notificationText)
+//
+//        // Convert list to JSON and save it
+//        val json = Gson().toJson(notifications)
+//        editor.putString("notifications_list", json)
+//        editor.apply()
+//    }
+//
+//    // Retrieve notifications from SharedPreferences
+//    fun getNotificationsFromLocalStorage(context: Context): List<String> {
+//        val prefs: SharedPreferences = context.getSharedPreferences("notifications_prefs", Context.MODE_PRIVATE)
+//        val json = prefs.getString("notifications_list", null)
+//        val type = object : TypeToken<List<String>>() {}.type
+//        return Gson().fromJson(json, type) ?: emptyList()
+//    }
 
-        // Retrieve current notifications, add the new one
-        val notifications = getNotificationsFromLocalStorage(context).toMutableList()
-        notifications.add(notificationText)
+    private fun storeNotificationInFirebase(username: String, notification: Notification) {
+        // Get the Firebase database reference
+        val database = FirebaseDatabase.getInstance()
+        val userNotificationRef = database.getReference("userNotification").child(username)
 
-        // Convert list to JSON and save it
-        val json = Gson().toJson(notifications)
-        editor.putString("notifications_list", json)
-        editor.apply()
+        // Generate a unique ID for the notification
+        val notificationId = userNotificationRef.push().key
+
+        if (notificationId != null) {
+            userNotificationRef.child(notificationId).setValue(notification)
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        Log.d("Firebase", "Notification stored successfully!")
+                    } else {
+                        Log.e("Firebase", "Error storing notification: ${task.exception?.message}")
+                    }
+                }
+        }
     }
 
-    // Retrieve notifications from SharedPreferences
-    fun getNotificationsFromLocalStorage(context: Context): List<String> {
-        val prefs: SharedPreferences = context.getSharedPreferences("notifications_prefs", Context.MODE_PRIVATE)
-        val json = prefs.getString("notifications_list", null)
-        val type = object : TypeToken<List<String>>() {}.type
-        return Gson().fromJson(json, type) ?: emptyList()
+    fun fetchNotificationsFromFirebase(username: String, callback: (List<Notification>) -> Unit) {
+        val database = FirebaseDatabase.getInstance()
+        val userNotificationRef = database.getReference("userNotification").child(username)
+
+        userNotificationRef.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val notifications = mutableListOf<Notification>()
+                for (notificationSnapshot in snapshot.children) {
+                    val notification = notificationSnapshot.getValue(Notification::class.java)
+                    if (notification != null) {
+                        notifications.add(notification)
+                    }
+                }
+                callback(notifications)
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.e("Firebase", "Error fetching notifications: ${error.message}")
+            }
+        })
     }
 }
