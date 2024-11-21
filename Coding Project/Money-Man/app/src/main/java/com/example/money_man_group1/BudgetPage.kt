@@ -159,7 +159,7 @@ class BudgetPage : AppCompatActivity() {
                     userSpendingInfo.categoryFive,
                     userSpendingInfo.categorySix
                 )
-
+3
                 //Checks if each category is active and if it is add to pie chart
                 for (category in categories) {
                     if (category.isCategoryActive == "Yes") {

@@ -3,15 +3,22 @@ package com.example.money_man_group1
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.Log
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
+import android.widget.Spinner
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+//import com.anychart.data.View
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import android.view.View
+
 import com.example.money_man_group1.NotificationUtils
 
 class SpendingPage : AppCompatActivity() {
@@ -43,67 +50,146 @@ class SpendingPage : AppCompatActivity() {
             insets
         }
 
-        val categoryNameText = findViewById<EditText>(R.id.categoryEditText) //Get the EditText category
+        //setup variables
+        val descriptionText = findViewById<EditText>(R.id.descriptionEditText) //Get the EditText category
         val amountSpentText = findViewById<EditText>(R.id.amountSpentEditText) //Get the EditText amount spent
-
+        val dropdownMenuWithCategory = findViewById<Spinner>(R.id.categortMenu) //Get the spinner
         val saveButton = findViewById<Button>(R.id.saveButton)
+//        val testButton = findViewById<Button>(R.id.testButton)
+
         firebaseReference = FirebaseDatabase.getInstance().getReference("userSpendingInfo") //gets instance of database
-        saveButton.setOnClickListener {
-            saveButton.isClickable = false
-            val categoryNameT = categoryNameText.text.toString().trim() //gets users wanted category
-            val amountSpentT = amountSpentText.text.toString().toDouble() //gets users amount spent
-            var categoryFound = false //flag to check if category is found
 
-            for (i in 1..6) { //loops through categories to find correct one
-                val categoryNumber = categoryToNumberMap[i] //gets category number as a name
-                val categoryRef = firebaseReference.child(userName).child(categoryNumber.toString())
+        //get the userName from the MainActivity
+        val userName = MainActivity.userData?.username ?: "Unknown User"
 
-                categoryRef.child("categoryName").get().addOnSuccessListener { dataSnapshot ->
-                    val categoryNameFromDB = dataSnapshot.value as? String //gets category name from database
-                    if (categoryNameFromDB == categoryNameT) { //category name matches databases
-                        categoryFound = true
+        // Create a list for the categories
+        val categoryList = mutableListOf<String>()
 
-                        //Retrieve currentMoneySpent
-                        categoryRef.child("currentMoneySpent").get().addOnSuccessListener { dataS ->
-                            val currentMoneySpent = (dataS.value as? Number)?.toDouble() ?: 0.0
-                            val updatedAmount = amountSpentT + currentMoneySpent
+        //add a "select an option" to the list
+        categoryList.add("Select a category")
+        val totalCategories = 6 // total number of categories
 
-                            //Updates currentMoneySpent
-                            categoryRef.child("currentMoneySpent").setValue(updatedAmount).addOnSuccessListener {
-                                Toast.makeText(this, "Data Saved!", Toast.LENGTH_SHORT).show()
-                                categoryNameText.text.clear() //Clears boxes for another user entry
-                                amountSpentText.text.clear()
+        // Loop through all categories and add the active ones to the list
+        for (i in 1..totalCategories) {
+            val categoryNumber = categoryToNumberMap[i]
+            val categoryRef = firebaseReference.child(userName).child(categoryNumber.toString())
 
-                                // Sends push notification when over the maxSpendingLimit of the category
-                                categoryRef.child("maxSpendingLimit").get().addOnSuccessListener { dataSnap ->
-                                    val maxSpendingLimit = (dataSnap.value as? Number)?.toDouble() ?: 0.0
-                                    var message: String? = null
-                                    if (updatedAmount > maxSpendingLimit) {
-                                        message = "You are $${updatedAmount - maxSpendingLimit} over the spending limit of ${categoryNameT}!"
-                                    } else if (updatedAmount == maxSpendingLimit){
-                                        message = "You have reached the spending limit of ${categoryNameT}!"
-                                    }
+            // Correct the field name from "active" to "categoryActive" based on your database structure
+            categoryRef.child("categoryActive").get().addOnSuccessListener { dataSnapshot ->
+                val active = dataSnapshot.value as? String
+                if (active == "Yes") {  // Check if the category is active
 
-                                    if (message != null) {
-                                        pendingNotificationMessage = message
-                                        message.let {
-                                            NotificationUtils.sendNotification(this, it)
-                                        }
-                                        pendingNotificationMessage = null
-                                    }
-                                }
-                            }
+                    // Get the category name
+                    categoryRef.child("categoryName").get().addOnSuccessListener { dataSnap ->
+                        val categoryName = dataSnap.value as? String
+
+                        // Add the category name to the list
+                        if (categoryName != null) {
+                            categoryList.add(categoryName)
                         }
-                        return@addOnSuccessListener
-                    }
-                }.addOnCompleteListener { //Checks if category is found
-                    if (!categoryFound && i == 6) {
-                        Toast.makeText(this, "Category not found!", Toast.LENGTH_SHORT).show()
                     }
                 }
             }
-            saveButton.isClickable = true
         }
+
+        //now we setup the spinner
+        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, categoryList)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        dropdownMenuWithCategory.adapter = adapter
+
+        // Initialize the selectedCategory and selectedCategoryKey variables
+        var selectedCategory: String? = null
+        var selectedCategoryKey: String? = null
+
+
+        // Set an OnItemSelectedListener on the spinner
+        dropdownMenuWithCategory.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            // When an item is selected, set the selectedCategory and selectedCategoryKey variables
+            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+                if (position > 0) {
+                    selectedCategory = categoryList[position]
+                    selectedCategoryKey = categoryToNumberMap[position]
+                } else {
+                    selectedCategory = null
+                    selectedCategoryKey = null
+                    descriptionText.text.clear()
+                    amountSpentText.text.clear()
+                }
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>) {
+                // If nothing is selected, set the selectedCategory and selectedCategoryKey variables to null
+                selectedCategory = null
+                selectedCategoryKey = null
+                descriptionText.text.clear()
+                amountSpentText.text.clear()
+            }
+        }
+
+
+        saveButton.setOnClickListener {
+            saveButton.isClickable = false
+
+            val amountSpentT = amountSpentText.text.toString().toDoubleOrNull() // gets user's amount spent
+            val selectedCategoryT = selectedCategory?.trim() // retrieves the selected category name
+            val selectedCategoryKeyT = selectedCategoryKey?.trim() // retrieves the selected category key
+
+            if (amountSpentT == null || selectedCategoryT.isNullOrEmpty() || selectedCategoryKeyT.isNullOrEmpty() || selectedCategoryT == "Select a category") {
+                Toast.makeText(this, "Please provide valid inputs!", Toast.LENGTH_SHORT).show()
+                saveButton.isClickable = true
+                return@setOnClickListener
+            }
+
+            // Reference to the selected category in Firebase
+            val categoryRef = firebaseReference.child(userName).child(selectedCategoryKeyT)
+
+            // Retrieve currentMoneySpent
+            categoryRef.child("currentMoneySpent").get().addOnSuccessListener { dataSnapshot ->
+                val currentMoneySpent = (dataSnapshot.value as? Number)?.toDouble() ?: 0.0
+                val updatedAmount = amountSpentT + currentMoneySpent
+
+                // Update currentMoneySpent
+                categoryRef.child("currentMoneySpent").setValue(updatedAmount).addOnSuccessListener {
+                    Toast.makeText(this, "Data Saved!", Toast.LENGTH_SHORT).show()
+                    descriptionText.text.clear() // Clears input fields
+                    amountSpentText.text.clear()
+
+                    // Check and notify if over the maxSpendingLimit
+                    categoryRef.child("maxSpendingLimit").get().addOnSuccessListener { maxLimitSnapshot ->
+                        val maxSpendingLimit = (maxLimitSnapshot.value as? Number)?.toDouble() ?: 0.0
+                        var message: String? = null
+
+                        when {
+                            updatedAmount > maxSpendingLimit -> {
+                                message = "You are $${updatedAmount - maxSpendingLimit} over the spending limit of $selectedCategoryT!"
+                            }
+                            updatedAmount == maxSpendingLimit -> {
+                                message = "You have reached the spending limit of $selectedCategoryT!"
+                            }
+                        }
+
+                        message?.let {
+                            NotificationUtils.sendNotification(this, it)
+                        }
+                    }
+                }
+
+                //now we add the information of the money spent and the description to the database
+                val spentInfo = UserActivityLog(
+                    message = descriptionText.text.toString(),
+                    amount = amountSpentT,
+                    category = selectedCategoryT
+                )
+
+                val userActivityLogRef = FirebaseDatabase.getInstance().getReference("userActivityLog").child(userName)
+                userActivityLogRef.push().setValue(spentInfo)
+            }.addOnFailureListener {
+                Toast.makeText(this, "Failed to save data. Please try again!", Toast.LENGTH_SHORT).show()
+            }.addOnCompleteListener {
+                saveButton.isClickable = true
+            }
+        }
+
 
         val backButton = findViewById<Button>(R.id.backbutton)
         backButton.setOnClickListener {
