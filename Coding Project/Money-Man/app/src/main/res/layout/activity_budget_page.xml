@@ -97,8 +97,6 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-
-
     <!-- Navigation menu -->
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/nav_view"
