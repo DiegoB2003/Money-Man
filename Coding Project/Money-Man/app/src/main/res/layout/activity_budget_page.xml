@@ -51,6 +51,16 @@
                 android:backgroundTint="#103155"
                 android:textColor="@color/button_text_color"
                 android:text="Add Spending" />
+
+            <TextView
+                android:id="@+id/addSpendingText"
+                android:layout_width="280dp"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="70dp"
+                android:layout_marginTop="200dp"
+                android:visibility="invisible"
+                android:text="Add Categories and/or Spending to show Pie Chart"
+                android:textSize="35dp" />
         </com.anychart.AnyChartView>
 
 
@@ -65,8 +75,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
-
-
 
         <Button
             android:id="@+id/open_drawer_button"

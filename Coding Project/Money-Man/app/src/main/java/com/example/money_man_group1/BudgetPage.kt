@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import android.widget.Button
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.ActionBarDrawerToggle
@@ -159,12 +160,21 @@ class BudgetPage : AppCompatActivity() {
                     userSpendingInfo.categoryFive,
                     userSpendingInfo.categorySix
                 )
-3
-                //Checks if each category is active and if it is add it to pie chart
+
+                val addSpendingTextView = findViewById<TextView>(R.id.addSpendingText)
+                var valuesInChart = false
+
+                //Checks if each category is active and if it is add to pie chart
                 for (category in categories) {
-                    if (category.isCategoryActive == "Yes") {
+                    if (category.isCategoryActive == "Yes" && category.currentMoneySpent != 0.0) {
                         addToChart(category.categoryName, category.currentMoneySpent)
+                        valuesInChart = true
                     }
+                }
+                if (!valuesInChart) {
+                    addSpendingTextView.visibility = TextView.VISIBLE
+                } else {
+                    addSpendingTextView.visibility = TextView.INVISIBLE
                 }
             }
         }
