@@ -169,26 +169,49 @@ class AddingCategoryPage : AppCompatActivity() {
                     1f
                 )
                 setOnClickListener {
-                    // Clear the values and reset database entries
-                    mainEditText.text.clear()
-                    categoryDesc.text.clear()
-                    maxSpendingLimit.text.clear()
 
-                    // Reset the values in the database
-                    val categoryNumber = categoryToNumberMap[i]
-                    firebaseReference.child(userName).child(categoryNumber.toString())
-                        .child("categoryActive").setValue("No")
-                    firebaseReference.child(userName).child(categoryNumber.toString())
-                        .child("categoryName").setValue("")
-                    firebaseReference.child(userName).child(categoryNumber.toString())
-                        .child("categoryDescription").setValue("")
-                    firebaseReference.child(userName).child(categoryNumber.toString())
-                        .child("maxSpendingLimit").setValue(0.0)
+                    //if the category box is empty, then dont do anything
+                    if (mainEditText.text.isEmpty()) {
 
-                    // Decrement the counter and update the number of categories
-                    counter--
-                    firebaseReference.child(userName).child("numberOfSpendingCategories")
-                        .setValue(counter)
+                        Toast.makeText(
+                            this@AddingCategoryPage,
+                            "This is blank",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        return@setOnClickListener
+                    }
+                    else {
+                        // Clear the values and reset database entries
+                        mainEditText.text.clear()
+                        categoryDesc.text.clear()
+                        maxSpendingLimit.text.clear()
+
+                        // Reset the values in the database
+                        val categoryNumber = categoryToNumberMap[i]
+                        firebaseReference.child(userName).child(categoryNumber.toString())
+                            .child("categoryActive").setValue("No")
+                        firebaseReference.child(userName).child(categoryNumber.toString())
+                            .child("categoryName").setValue("")
+                        firebaseReference.child(userName).child(categoryNumber.toString())
+                            .child("categoryDescription").setValue("")
+                        firebaseReference.child(userName).child(categoryNumber.toString())
+                            .child("maxSpendingLimit").setValue(0.0)
+                        firebaseReference.child(userName).child(categoryNumber.toString())
+                            .child("currentMoneySpent").setValue(0.0)
+
+
+                        //set a toast message to let the user know that the category has been removed
+                        Toast.makeText(
+                            this@AddingCategoryPage,
+                            "Category has been deleted",
+                            Toast.LENGTH_SHORT
+                        ).show()
+
+                        // Decrement the counter and update the number of categories
+                        counter--
+                        firebaseReference.child(userName).child("numberOfSpendingCategories")
+                            .setValue(counter)
+                    }
                 }
             }
 
@@ -219,6 +242,9 @@ class AddingCategoryPage : AppCompatActivity() {
                         firebaseReference.child(userName).child(categoryNumber.toString()).child("categoryName").setValue(categoryName)
                         firebaseReference.child(userName).child(categoryNumber.toString()).child("categoryDescription").setValue(categoryDescription)
                         firebaseReference.child(userName).child(categoryNumber.toString()).child("maxSpendingLimit").setValue(spendingLimit)
+
+                        //now give the user a toast message to let them know that the category has been set
+                        Toast.makeText(this@AddingCategoryPage, "Category has been set", Toast.LENGTH_SHORT).show()
 
                         firebaseReference.child(userName).child("numberOfSpendingCategories").setValue(counter)
                     }.addOnFailureListener { exception ->
