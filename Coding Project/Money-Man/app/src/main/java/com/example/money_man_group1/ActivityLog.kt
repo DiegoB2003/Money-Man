@@ -63,6 +63,7 @@ class ActivityLog : AppCompatActivity() {
 
                 // Display the fetched data in the text log
                 textLog.text = activityData.toString()
+
             }
 
             override fun onCancelled(error: DatabaseError) {
