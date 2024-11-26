@@ -35,7 +35,6 @@
             android:gravity="center" />
     </ScrollView>
 
-
     <Button
         android:id="@+id/backbutton"
         android:layout_width="121dp"
