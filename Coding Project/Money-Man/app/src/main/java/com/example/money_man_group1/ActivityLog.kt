@@ -61,7 +61,6 @@ class ActivityLog : AppCompatActivity() {
                     activityData.append("Timestamp: $timestamp\n\n")
                 }
 
-
                 // Display the fetched data in the text log
                 textLog.text = activityData.toString()
 
