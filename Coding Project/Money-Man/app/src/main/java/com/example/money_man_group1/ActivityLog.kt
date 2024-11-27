@@ -5,11 +5,11 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import android.widget.TextView
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import com.google.firebase.database.*
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class ActivityLog : AppCompatActivity() {
 
@@ -46,24 +46,34 @@ class ActivityLog : AppCompatActivity() {
             override fun onDataChange(snapshot: DataSnapshot) {
                 // Clear previous data
                 val activityData = StringBuilder()
+                val activityLogEntries = mutableListOf<UserActivityLog>()
+
+                // Setup date format
+                val dateFormat = SimpleDateFormat("dd-MM-yyyy hh:mm:ss a", Locale.getDefault())
 
                 // Iterate through the user activity log entries
                 for (childSnapshot in snapshot.children) {
-                    val amount = childSnapshot.child("amount").getValue(Int::class.java) ?: 0
-                    val category = childSnapshot.child("category").getValue(String::class.java) ?: "N/A"
-                    val message = childSnapshot.child("message").getValue(String::class.java) ?: "N/A"
-                    val timestamp = childSnapshot.child("timestamp").getValue(Long::class.java) ?: 0L
+                    val logEntry = childSnapshot.getValue(UserActivityLog::class.java)
+                    if (logEntry != null) {
+                        activityLogEntries.add(logEntry)
+                    }
+                }
 
-                    // Append the fetched data to the StringBuilder
-                    activityData.append("Amount: $amount\n")
-                    activityData.append("Category: $category\n")
-                    activityData.append("Message: $message\n")
-                    activityData.append("Timestamp: $timestamp\n\n")
+                // Sort entries by timestamp in descending order
+                val sortedEntries = activityLogEntries.sortedByDescending { it.timestamp }
+
+                // Format and append the sorted entries to the StringBuilder
+                for (entry in sortedEntries) {
+                    val date = Date(entry.timestamp)
+                    val formattedDate = dateFormat.format(date)
+                    activityData.append("Amount: ${entry.amount}\n")
+                    activityData.append("Category: ${entry.category}\n")
+                    activityData.append("Message: ${entry.message}\n")
+                    activityData.append("Timestamp: $formattedDate\n\n")
                 }
 
                 // Display the fetched data in the text log
                 textLog.text = activityData.toString()
-
             }
 
             override fun onCancelled(error: DatabaseError) {
