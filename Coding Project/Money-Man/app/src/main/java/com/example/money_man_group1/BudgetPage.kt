@@ -18,6 +18,8 @@ import com.anychart.AnyChartView
 import com.anychart.chart.common.dataentry.DataEntry
 import com.anychart.chart.common.dataentry.ValueDataEntry
 import com.anychart.charts.Pie
+import com.anychart.enums.Align
+import com.anychart.enums.LegendLayout
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
@@ -178,6 +180,20 @@ class BudgetPage : AppCompatActivity() {
                 }
             }
         }
+        pieChart.title("Total Spending Breakdown")
+        pieChart.title().fontSize(25)
+        pieChart.labels().position("inside").format("\${%value}").fontSize(15)
+        pieChart.legend().title().enabled(true)
+        pieChart.legend().title()
+            .text("Categories")
+            .padding(0.0, 0.0, 15.0, 0.0)
+            .fontSize(25)
+        pieChart.legend()
+            .position("center-bottom")
+            .itemsLayout(LegendLayout.HORIZONTAL_EXPANDABLE)
+            .align(Align.CENTER)
+        pieChart.innerRadius("25%")
+        pieChart.radius("150%")
         anyChartView.refreshDrawableState()
     }
 
