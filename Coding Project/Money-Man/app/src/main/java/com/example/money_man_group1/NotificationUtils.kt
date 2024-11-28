@@ -8,7 +8,8 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import android.Manifest
 import android.app.Activity
-import android.content.SharedPreferences
+import android.app.PendingIntent
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.util.Log
 import androidx.core.app.ActivityCompat
@@ -17,8 +18,6 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 
 // Define a request code
 private const val NOTIFICATION_PERMISSION_REQUEST_CODE = 1001
@@ -36,7 +35,7 @@ object NotificationUtils {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val name = "Alerts"
             val descriptionText = "Channel for user alerts and notifications"
-            val importance = NotificationManager.IMPORTANCE_DEFAULT
+            val importance = NotificationManager.IMPORTANCE_HIGH
             val channel = NotificationChannel(channelId, name, importance).apply {
                 description = descriptionText
             }
@@ -45,12 +44,21 @@ object NotificationUtils {
             notificationManager.createNotificationChannel(channel)
         }
 
+        // Intent for notification tap
+        val intent = Intent(context, ActivityLog::class.java)
+        val pendingIntent = PendingIntent.getActivity(
+            context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
         // Create and send the notification
         val builder = NotificationCompat.Builder(context, channelId)
             .setSmallIcon(R.drawable.baseline_notifications_24)
-            .setContentTitle("New Alert")
+            .setContentTitle("Budget Alert!")
             .setContentText(message)
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setCategory(NotificationCompat.CATEGORY_MESSAGE)
+            .setAutoCancel(true)
+            .setContentIntent(pendingIntent)
 
         with(NotificationManagerCompat.from(context)) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -75,38 +83,12 @@ object NotificationUtils {
             }
         }
 
-        // Save the notification text to storage for NotificationsPage
-//        saveNotificationToLocalStorage(context, message)
-
         // Save the notification to Firebase
         val notification = Notification(
             message = message
         )
         storeNotificationInFirebase(userName, notification)
     }
-
-    // Save notification to SharedPreferences
-//    private fun saveNotificationToLocalStorage(context: Context, notificationText: String) {
-//        val prefs: SharedPreferences = context.getSharedPreferences("notifications_prefs", Context.MODE_PRIVATE)
-//        val editor = prefs.edit()
-//
-//        // Retrieve current notifications, add the new one
-//        val notifications = getNotificationsFromLocalStorage(context).toMutableList()
-//        notifications.add(notificationText)
-//
-//        // Convert list to JSON and save it
-//        val json = Gson().toJson(notifications)
-//        editor.putString("notifications_list", json)
-//        editor.apply()
-//    }
-//
-//    // Retrieve notifications from SharedPreferences
-//    fun getNotificationsFromLocalStorage(context: Context): List<String> {
-//        val prefs: SharedPreferences = context.getSharedPreferences("notifications_prefs", Context.MODE_PRIVATE)
-//        val json = prefs.getString("notifications_list", null)
-//        val type = object : TypeToken<List<String>>() {}.type
-//        return Gson().fromJson(json, type) ?: emptyList()
-//    }
 
     private fun storeNotificationInFirebase(username: String, notification: Notification) {
         // Get the Firebase database reference

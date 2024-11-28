@@ -48,6 +48,8 @@ class NotificationsPage : AppCompatActivity() {
         adapter = NotificationsAdapter(notifications) { notification ->
             // Handle notification click
             Toast.makeText(this, "Clicked: ${notification.timestamp}", Toast.LENGTH_SHORT).show()
+            val intent = Intent(this, ActivityLog::class.java)
+            startActivity(intent)
         }
 
         recyclerView.layoutManager = LinearLayoutManager(this)

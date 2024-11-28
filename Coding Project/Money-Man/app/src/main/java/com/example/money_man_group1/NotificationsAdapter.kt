@@ -39,7 +39,7 @@ class NotificationsAdapter(
     override fun getItemCount(): Int = notificationList.size
 
     fun updateNotifications(newList: List<Notification>) {
-        notificationList = newList
+        notificationList = newList.asReversed()
         notifyDataSetChanged() // Update the RecyclerView
     }
 }
