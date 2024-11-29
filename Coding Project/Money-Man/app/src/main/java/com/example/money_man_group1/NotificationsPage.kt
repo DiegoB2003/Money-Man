@@ -2,12 +2,14 @@ package com.example.money_man_group1
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.MenuItem
+import android.view.View
 import android.widget.Button
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.core.view.ViewCompat
@@ -23,10 +25,14 @@ class NotificationsPage : AppCompatActivity() {
     val userName: String = MainActivity.userData?.username ?: "Unknown User"
 
     // Notifications Recycler View vars
-
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: NotificationsAdapter
     private val notifications = mutableListOf<Notification>()
+    private lateinit var emptyView: TextView
+
+    // Button box
+    private lateinit var backButton: Button
+    private lateinit var clearAllButton: Button
 
     // Navigation vars
     private lateinit var drawerLayout: DrawerLayout
@@ -55,12 +61,35 @@ class NotificationsPage : AppCompatActivity() {
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = adapter
 
+        emptyView = findViewById(R.id.empty_view)
+
         // Fetch notifications
         NotificationUtils.fetchNotificationsFromFirebase(userName) { fetchedNotifications ->
             // Update the RecyclerView
             notifications.clear()
             notifications.addAll(fetchedNotifications)
             adapter.updateNotifications(notifications)
+            toggleEmptyView(notifications)
+        }
+
+        // Configure back button functionality
+        backButton = findViewById(R.id.back_button)
+        backButton.setOnClickListener {
+            val intent = Intent(this, BudgetPage::class.java)
+            startActivity(intent)
+        }
+
+        // Configure clear all functionality
+        clearAllButton = findViewById(R.id.clear_all_button)
+        clearAllButton.setOnClickListener {
+            AlertDialog.Builder(this)
+                .setTitle("Clear All Notifications")
+                .setMessage("Are you sure you want to clear all notifications?")
+                .setPositiveButton("Yes") { _, _ ->
+                    NotificationUtils.clearAllNotifications(this, userName, adapter)
+                }
+                .setNegativeButton("Cancel", null)
+                .show()
         }
 
         // Nav view configurations
@@ -124,6 +153,16 @@ class NotificationsPage : AppCompatActivity() {
         // Enable toggle button in the action bar
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         toggle.syncState()
+    }
+
+    private fun toggleEmptyView(notifications: List<Notification>) {
+        if (notifications.isEmpty()) {
+            emptyView.visibility = View.VISIBLE
+            recyclerView.visibility = View.GONE
+        } else {
+            emptyView.visibility = View.GONE
+            recyclerView.visibility = View.VISIBLE
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

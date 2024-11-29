@@ -12,6 +12,7 @@ import android.app.PendingIntent
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.util.Log
+import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.firebase.database.DataSnapshot
@@ -130,5 +131,24 @@ object NotificationUtils {
                 Log.e("Firebase", "Error fetching notifications: ${error.message}")
             }
         })
+    }
+
+    fun clearAllNotifications(context: Context, username: String, adapter: NotificationsAdapter) {
+        val database = FirebaseDatabase.getInstance()
+        val userNotificationRef = database.getReference("userNotification").child(username)
+
+        userNotificationRef.removeValue()
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    Log.d("Firebase", "All notifications cleared for $username.")
+                    Toast.makeText(context, "All notifications cleared.", Toast.LENGTH_SHORT).show()
+
+                    // Clear local RecyclerView data
+                    adapter.updateNotifications(emptyList())
+                } else {
+                    Log.e("Firebase", "Failed to clear notifications: ${task.exception?.message}")
+                    Toast.makeText(context, "Failed to clear notifications.", Toast.LENGTH_SHORT).show()
+                }
+            }
     }
 }
