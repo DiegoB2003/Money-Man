@@ -8,8 +8,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.database.*
 import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
+import java.util.*
 
 class ActivityLog : AppCompatActivity() {
 
@@ -20,59 +19,51 @@ class ActivityLog : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_log)
 
-        // Setup Firebase and initialize variables
+        // Initialize Firebase and UI elements
         firebaseReference = FirebaseDatabase.getInstance().reference
         textLog = findViewById(R.id.text_log)
 
-        // Get userName
-        val userName: String = MainActivity.userData?.username ?: "Unknown User"
+        // Get username
+        val userName = MainActivity.userData?.username ?: "Unknown User"
         Log.d("ActivityLog", "Fetched userName: $userName")
 
-        // Fetch data from Firebase
+        // Fetch and display the activity log
         fetchActivityLog(userName)
 
-        // Setup back button
-        val backButton: Button = findViewById(R.id.backbutton)
-        backButton.setOnClickListener {
+        // Set up the back button
+        findViewById<Button>(R.id.backbutton).setOnClickListener {
             startActivity(Intent(this, BudgetPage::class.java))
         }
     }
 
-    // Function to fetch activity log from Firebase
     private fun fetchActivityLog(userName: String) {
         val userLogRef = firebaseReference.child("userActivityLog").child(userName)
 
         userLogRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                // Clear previous data
                 val activityData = StringBuilder()
                 val activityLogEntries = mutableListOf<UserActivityLog>()
-
-                // Setup date format
                 val dateFormat = SimpleDateFormat("dd-MM-yyyy hh:mm:ss a", Locale.getDefault())
 
-                // Iterate through the user activity log entries
+                // Collect log entries
                 for (childSnapshot in snapshot.children) {
                     val logEntry = childSnapshot.getValue(UserActivityLog::class.java)
-                    if (logEntry != null) {
-                        activityLogEntries.add(logEntry)
-                    }
+                    logEntry?.let { activityLogEntries.add(it) }
                 }
 
-                // Sort entries by timestamp in descending order
-                val sortedEntries = activityLogEntries.sortedByDescending { it.timestamp }
-
-                // Format and append the sorted entries to the StringBuilder
-                for (entry in sortedEntries) {
-                    val date = Date(entry.timestamp)
-                    val formattedDate = dateFormat.format(date)
-                    activityData.append("Amount: ${entry.amount}\n")
-                    activityData.append("Category: ${entry.category}\n")
-                    activityData.append("Message: ${entry.message}\n")
-                    activityData.append("Timestamp: $formattedDate\n\n")
+                // Sort entries and format them for display
+                activityLogEntries.sortedByDescending { it.timestamp }.forEach { entry ->
+                    val formattedDate = dateFormat.format(Date(entry.timestamp))
+                    activityData.append(
+                        "Amount: ${entry.amount}\n" +
+                                "Category: ${entry.category}\n" +
+                                "Message: ${entry.message}\n" +
+                                "Timestamp: $formattedDate\n"
+                    )
+                    activityData.append("—".repeat(15) + "\n") // Add a line divider between messages
                 }
 
-                // Display the fetched data in the text log
+                // Update UI
                 textLog.text = activityData.toString()
             }
 
