@@ -1,7 +1,16 @@
 package com.example.money_man_group1
 
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.Typeface
 import android.os.Bundle
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.SpannableStringBuilder
+import android.text.style.ForegroundColorSpan
+import android.text.style.RelativeSizeSpan
+import android.text.style.StyleSpan
+import android.text.style.TabStopSpan
 import android.util.Log
 import android.widget.Button
 import android.widget.TextView
@@ -41,9 +50,12 @@ class ActivityLog : AppCompatActivity() {
 
         userLogRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                val activityData = StringBuilder()
+                val activityData = SpannableStringBuilder()
                 val activityLogEntries = mutableListOf<UserActivityLog>()
                 val dateFormat = SimpleDateFormat("dd-MM-yyyy hh:mm:ss a", Locale.getDefault())
+
+                // Tab stop for alignment
+                val tabWidth = 80 // Adjust for your UI width
 
                 // Collect log entries
                 for (childSnapshot in snapshot.children) {
@@ -54,17 +66,31 @@ class ActivityLog : AppCompatActivity() {
                 // Sort entries and format them for display
                 activityLogEntries.sortedByDescending { it.timestamp }.forEach { entry ->
                     val formattedDate = dateFormat.format(Date(entry.timestamp))
-                    activityData.append(
-                        "Amount: ${entry.amount}\n" +
-                                "Category: ${entry.category}\n" +
-                                "Message: ${entry.message}\n" +
-                                "Timestamp: $formattedDate\n"
-                    )
-                    activityData.append("—".repeat(15) + "\n") // Add a line divider between messages
+
+                    // Create a single line with category and amount aligned
+                    val categoryAmountLine = SpannableString("${entry.category.capitalize()} \t- $${String.format("%.2f", entry.amount)}").apply {
+                        setSpan(TabStopSpan.Standard(tabWidth), entry.category.length + 1, length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+                        setSpan(RelativeSizeSpan(1.3f), 0, entry.category.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE) // Larger size for category
+                        setSpan(StyleSpan(Typeface.BOLD), 0, entry.category.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE) // Bold text for category
+                        setSpan(RelativeSizeSpan(1.3f), entry.category.length + 1, length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE) // Larger size for amount
+                        setSpan(StyleSpan(Typeface.BOLD), entry.category.length + 1, length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE) // Bold text for amount
+                        setSpan(ForegroundColorSpan(Color.RED), entry.category.length + 1, length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE) // Red color for amount
+                    }
+
+                    // Create normal text for Message and Timestamp
+                    val messageLine = SpannableString("\n\"${entry.message}\"")
+                    val timestampLine = SpannableString("\nAt: $formattedDate\n")
+
+                    // Append to the activity data
+                    activityData.append(categoryAmountLine)
+                    activityData.append(messageLine)
+                    activityData.append(timestampLine)
+                    activityData.append("─".repeat(25) + "\n") // Solid line separator
+
                 }
 
                 // Update UI
-                textLog.text = activityData.toString()
+                textLog.text = activityData
             }
 
             override fun onCancelled(error: DatabaseError) {
@@ -72,4 +98,5 @@ class ActivityLog : AppCompatActivity() {
             }
         })
     }
+
 }
