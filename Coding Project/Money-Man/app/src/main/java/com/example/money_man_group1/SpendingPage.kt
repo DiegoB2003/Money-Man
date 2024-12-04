@@ -161,7 +161,8 @@ class SpendingPage : AppCompatActivity() {
 
                         when {
                             updatedAmount > maxSpendingLimit -> {
-                                message = "You are $${updatedAmount - maxSpendingLimit} over the spending limit of $selectedCategoryT!"
+                                val formattedAmount = String.format("%.2f", updatedAmount - maxSpendingLimit)
+                                message = "You are $$formattedAmount over the spending limit of $selectedCategoryT!"
                             }
                             updatedAmount == maxSpendingLimit -> {
                                 message = "You have reached the spending limit of $selectedCategoryT!"
