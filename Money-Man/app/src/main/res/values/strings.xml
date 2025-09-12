@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Money-Man_Group1</string>
+    <string name="navigation_drawer_open">Open Drawer Menu</string>
+    <string name="navigation_drawer_close">Close Drawer Menu</string>
+    <string name="notifications_page_title">Notifications</string>
+    <string name="back_button_text">Back</string>
+    <string name="clear_all_button_text">Clear All</string>
+    <string name="empty_notifications_text">No notifications available</string>
+
+</resources>
