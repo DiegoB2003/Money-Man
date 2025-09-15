@@ -15,6 +15,10 @@ Upon logging in or making a new account, this app displays a user's expenses gra
 - Click on a notification to review your spending activity.
 
 ## My contributions:
-- 
+- Designed and added the notifications screen.
+- Implemented notification system.
+- Modified database schema using Firebase API to save notification data.
+- Designed and added the drawer navigation menu.
+- Designed and added the login screen.
 
 This app was developed for an Undergraduate project at the University of Illinois at Chicago in a CS 440 course.
